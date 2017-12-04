@@ -4,7 +4,7 @@ metadata:
   name: prism-lts
   labels:
     app: prism-lts
-  namespace: default
+  namespace: data-processing
 spec:
   replicas: 1
   selector:
