@@ -21,6 +21,6 @@ curl -i -X POST \
 "locale":"en",
 "timezone":"UTC",
 "flush.size":"1",
-"s3.bucket.name":"prism-lts"
+"s3.bucket.name":"local-prism-lts"
 }}' \
  'http://localhost:8083/connectors'

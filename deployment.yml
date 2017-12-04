@@ -1,0 +1,72 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: prism-lts
+  labels:
+    app: prism-lts
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prism-lts
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        app: prism-lts
+      labels:
+        app: prism-lts
+    spec:
+      containers:
+      - image: confluentinc/cp-kafka-connect:3.2.2
+        imagePullPolicy: Always
+        name: prism-lts
+        resources: {}
+        volumeMounts:
+        - mountPath: /root/.aws
+          name: aws-s3-creds
+        env:
+        - name: CONNECT_GROUP_ID
+          value: "connect-cluster"
+        - name: CONNECT_OFFSET_STORAGE_TOPIC
+          value: "connect-offsets"
+        - name: CONNECT_CONFIG_STORAGE_TOPIC
+          value: "connect-configs"
+        - name: CONNECT_STATUS_STORAGE_TOPIC
+          value: "connect-status"
+        - name: CONNECT_BOOTSTRAP_SERVERS
+          value: "kafka-01:9092,kafka-02:9092,kafka-03:9092"
+        - name: CONNECT_CLUSTER_ON_ROLES
+          value: "False"
+        - name: CONNECT_INTERNAL_KEY_CONVERTER
+          value: "org.apache.kafka.connect.json.JsonConverter"
+        - name: CONNECT_INTERNAL_VALUE_CONVERTER
+          value: "org.apache.kafka.connect.json.JsonConverter"
+        - name: CONNECT_KEY_CONVERTER
+          value: "io.confluent.connect.avro.AvroConverter"
+        - name: CONNECT_VALUE_CONVERTER
+          value: "io.confluent.connect.avro.AvroConverter"
+        - name: CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL
+          value: "http://kafka-01:8081"
+        - name: CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
+          value: "http://kafka-01:8081"
+        - name: CONNECT_REST_ADVERTISED_HOST_NAME
+          value: "localhost"
+        ports:
+        - containerPort: 8083
+          protocol: TCP
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - secret:
+          defaultMode: 420
+          secretName: aws-s3-creds
+        name: aws-s3-creds

@@ -1,0 +1,33 @@
+apiVersion: v1
+data:
+  submit-kafka-connect-s3-job: |
+    #!/bin/bash
+
+    curl -i -X POST \
+       -H "Accept:application/json" \
+       -H "Content-Type:application/json" \
+       -d \
+    '{"name":"prism-lts-test",
+     "config":
+    {
+    "name":"prism-lts-test",
+    "connector.class":"io.confluent.connect.s3.S3SinkConnector",
+    "schema.generator.class":"io.confluent.connect.storage.hive.schema.TimeBasedSchemaGenerator",
+    "format.class":"io.confluent.connect.s3.format.avro.AvroFormat",
+    "storage.class":"io.confluent.connect.s3.storage.S3Storage",
+    "partitioner.class":"io.confluent.connect.storage.partitioner.TimeBasedPartitioner",
+    "partition.duration.ms":"3000000",
+    "schema.compatibility":"BACKWARD",
+    "tasks.max":"1",
+    "topics":"health-metrics",
+    "path.format":"'"'"'year'"'"'=YYYY/'"'"'month'"'"'=MM/'"'"'day'"'"'=dd/'"'"'hour'"'"'=HH/'"'"'minute'"'"'=mm",
+    "locale":"en",
+    "timezone":"UTC",
+    "flush.size":"1",
+    "s3.bucket.name":"dev-prism-lts"
+    }}' \
+     'http://prism-lts:8083/connectors'
+kind: ConfigMap
+metadata:
+  name: submit-job-script
+  namespace: data-processing
