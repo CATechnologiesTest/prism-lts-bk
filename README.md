@@ -10,3 +10,12 @@
 4. `kubectl apply -f ./local/submit-kafka-connect-s3-job-job.yml --validate=false`
 5. `./tail-logs` to `tail -f` the kafka conenct container
 6. `./post-message` to send a message into the kafka bus 
+
+## TODO
+
+- [ ] Circle CI
+- [ ] Monitoring of Kafka Connect Jobs
+- [ ] Fix `health-metrics  schema issues in dev
+- [ ] Automate recovery of Connect Jobs (turn k8s job into k8s cron job?)
+- [ ] Alert on failed jobs
+- [ ] Provide SQL "job" interface to Reporting
