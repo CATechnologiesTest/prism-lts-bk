@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: submit-kafka-connect-s3-job
+  namespace: data-processing
+spec:
+  template:
+    metadata:
+      name: submit-kafka-connect-s3-job
+    spec:
+      containers:
+      - name: submit-kafka-connect-s3-job
+        image: bash-curl
+        imagePullPolicy: Never
+        command: ["bash", "-ex", "/tmp/submit-kafka-connect-s3-job"]
+        volumeMounts:
+        - mountPath: /tmp
+          name: submit-job-script
+      restartPolicy: OnFailure
+      volumes:
+      - configMap:
+          defaultMode: 500
+          name: submit-job-script
+        name: submit-job-script

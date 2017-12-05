@@ -22,11 +22,12 @@ data:
     "topics":"health-metrics",
     "path.format":"'"'"'year'"'"'=YYYY/'"'"'month'"'"'=MM/'"'"'day'"'"'=dd/'"'"'hour'"'"'=HH/'"'"'minute'"'"'=mm",
     "locale":"en",
+    "timestamp.extractor":"RecordField",
     "timezone":"UTC",
     "flush.size":"1",
     "s3.bucket.name":"dev-prism-lts"
     }}' \
-     'http://prism-lts:8083/connectors'
+    'http://prism-lts.data-processing.svc.k8s:8083/connectors'
 kind: ConfigMap
 metadata:
   name: submit-job-script
