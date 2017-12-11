@@ -15,7 +15,6 @@ Valid Options are:
 
 echo "Tailing logs for $APP_NAME"
 
-
 function tail_logs {
   kubectl logs -f $(kubectl get po -o name -l app=$APP_NAME --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) -c $CONTAINER_NAME
 }

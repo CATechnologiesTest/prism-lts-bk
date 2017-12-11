@@ -9,7 +9,8 @@
 3. `kubectl apply -f ./local/submit-kafka-connect-s3-job-cm.yml --validate=false`
 4. `kubectl apply -f ./local/submit-kafka-connect-s3-job-job.yml --validate=false`
 5. `./tail-logs` to `tail -f` the kafka conenct container
-6. `./post-message` to send a message into the kafka bus 
+6. `kubectl port-forward $(kubectl get po -o name -l app=$APP_NAME  --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082` in order to port forward the rest proxy, `8083:8083` for `kafka-connect` local access.
+6. `./post-message` to send a message to the kafka rest proxy 
 
 ## TODO
 
