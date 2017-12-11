@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: submit-kafka-connect-s3-job
-  namespace: data-processing
+  namespace: default
 spec:
   template:
     metadata:

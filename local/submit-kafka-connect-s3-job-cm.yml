@@ -23,6 +23,7 @@ data:
     "path.format":"'"'"'year'"'"'=YYYY/'"'"'month'"'"'=MM/'"'"'day'"'"'=dd/'"'"'hour'"'"'=HH/'"'"'minute'"'"'=mm",
     "locale":"en",
     "timestamp.extractor":"RecordField",
+    "timestamp.field":"metric_date",
     "timezone":"UTC",
     "flush.size":"1",
     "s3.bucket.name":"dev-prism-lts"
@@ -31,4 +32,4 @@ data:
 kind: ConfigMap
 metadata:
   name: submit-job-script
-  namespace: data-processing
+  namespace: default
