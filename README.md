@@ -12,6 +12,9 @@
 - `kubectl apply -f ./local/submit-kafka-connect-s3-job-cm.yml --validate=false`
 - `kubectl apply -f ./local/submit-kafka-connect-s3-job-job.yml --validate=false`
 - `./tail-logs` to `tail -f` the kafka conenct container
+
+### To Send Data to the REST Proxy
+- `kubectl port-forward $(kubectl get po -o name -l app=prism-lts --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082`
 - `./post-message` to send a message into the kafka bus 
 
 ## Must Haves to Meet Customer Requirements
