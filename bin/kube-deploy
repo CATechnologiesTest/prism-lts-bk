@@ -1,0 +1,20 @@
+#!/bin/bash -e
+
+ENVIRONMENT=$1
+GIT_SHA=`git rev-parse HEAD`
+NAMESPACE=data-processing
+JUMPGATE_USER_NAME=deploy-data-processing
+SERVICE_NAME=prism-long-term-storage
+
+if [[ "$ENVIRONMENT" != "prod" && "$ENVIRONMENT" != "dev" ]]; then
+    echo 'Please pass an environment as the first argument to kube-deploy, eg. "kube-deploy prod" or "kube-deploy dev"'
+    exit 1
+fi
+
+sed 's|\${GIT_SHA}|'$GIT_SHA'|; s|\${NAMESPACE}|'$NAMESPACE'|; s|\${SERVICE_NAME}|'$SERVICE_NAME'|; s|\${IMAGE_PULL_SECRET}|'$IMAGE_PULL_SECRET'|' sts-entitled/deployment.tpl > deployment.yaml
+
+scp deployment.yaml "$JUMPGATE_USER_NAME@$ENVIRONMENT-jumpgate-01.commonstack.io:deployment.yaml"
+
+sed 's|\${GIT_SHA}|'$GIT_SHA'|; s|\${NAMESPACE}|'$NAMESPACE'|; s|\${SERVICE_NAME}|'$SERVICE_NAME'|; s|\${ENVIRONMENT}|'$ENVIRONMENT'|' bin/try-deploy.tpl > deploy-script
+
+ssh "$JUMPGATE_USER_NAME@$ENVIRONMENT-jumpgate-01.commonstack.io" 'bash -exs' < deploy-script
