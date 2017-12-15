@@ -1,0 +1,21 @@
+kafkaConnect:
+  replicaCount: 1
+  connectKeyConverter: "io.confluent.connect.avro.AvroConverter"
+  connectValueConverter: "io.confluent.connect.avro.AvroConverter"
+  connectRestAdvertisedHostName: "localhost"
+
+k8sJob:
+  imageSecretName: "quay-sts"
+  image: "quay.io/stsatlas/bash-curl:21d470eaddc292462c07d08ca19319caf2e55417"
+
+kafkaConnectJob:
+  name: "lts-test"
+  topics: "health-metrics"
+  timestampExtractor: "Record"
+  flushSize: 1
+  s3BucketName: "prism-lts-local"
+
+tags:
+  prism-lts-local-values: false
+  prism-lts-dev-values: false
+  prism-lts-prod-values: false

@@ -1,0 +1,76 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "name" . }}
+  namespace: {{ .Values.namespace | quote }}
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.kafkaConnect.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - image: confluentinc/cp-kafka-connect:3.2.2
+        imagePullPolicy: Always
+        name: prism-lts
+        resources: {}
+        volumeMounts:
+        - mountPath: /root/.aws
+          name: aws-s3-creds
+        env:
+        - name: CONNECT_GROUP_ID
+          value: "connect-cluster"
+        - name: CONNECT_OFFSET_STORAGE_TOPIC
+          value: "connect-offsets"
+        - name: CONNECT_CONFIG_STORAGE_TOPIC
+          value: "connect-configs"
+        - name: CONNECT_STATUS_STORAGE_TOPIC
+          value: "connect-status"
+        - name: CONNECT_BOOTSTRAP_SERVERS
+          value: {{ .Values.kafkaConnect.kafkaServers | quote }}
+        - name: CONNECT_CLUSTER_ON_ROLES
+          value: "False"
+        - name: CONNECT_INTERNAL_KEY_CONVERTER
+          value: "org.apache.kafka.connect.json.JsonConverter"
+        - name: CONNECT_INTERNAL_VALUE_CONVERTER
+          value: "org.apache.kafka.connect.json.JsonConverter"
+        - name: CONNECT_KEY_CONVERTER
+          value: {{ .Values.kafkaConnect.connectKeyConverter | quote }}
+        - name: CONNECT_VALUE_CONVERTER
+          value: {{ .Values.kafkaConnect.connectValueConverter | quote }}
+        - name: CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL
+          value: {{ .Values.kafkaConnect.connectKeyConverterSchemaRegistryUrl | quote }}
+        - name: CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
+          value: {{ .Values.kafkaConnect.connectValueConverterSchemaRegistryUrl | quote }}
+        - name: CONNECT_REST_ADVERTISED_HOST_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        ports:
+        - containerPort: 8083
+          protocol: TCP
+#        command: ["/bin/sh"]
+#        args: ["-c", "while true; do sleep 10; done"]
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - secret:
+          defaultMode: 420
+          secretName: aws-s3-creds
+        name: aws-s3-creds

@@ -1,0 +1,12 @@
+exports:
+  environment-specific-data:
+    kafkaConnect:
+      kafkaServers: "kafka-01:9092"
+      connectKeyConverterSchemaRegistryUrl: "http://kafka-01:8081"
+      connectValueConverterSchemaRegistryUrl: "http://kafka-01:8081"
+    kafkaConnectJob:
+      name: "prism-lts-s3-job"
+      s3BucketName: "local-prism-lts"
+      serviceDomainName: "prism-lts"
+    namespace: "default"
+

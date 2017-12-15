@@ -1,0 +1,15 @@
+dependencies:
+- name: prism-lts-local
+  repository: file://charts/prism-lts-local
+  version: 0.1.0
+- name: prism-lts-dev
+  repository: file://charts/prism-lts-dev
+  version: 0.1.0
+- name: prism-lts-prod
+  repository: file://charts/prism-lts-prod
+  version: 0.1.0
+- name: local-kafka
+  repository: file://../local-kafka
+  version: 0.1.0
+digest: sha256:5e7a3feab3a081f15c93b57947dc7427490e648db5f37537b04688432b23209a
+generated: 2017-12-14T15:49:13.34511329-07:00
