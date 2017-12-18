@@ -17,7 +17,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       containers:
-      - image: confluentinc/cp-kafka-connect:3.2.2
+      - image: confluentinc/cp-kafka-connect:3.2.0
         imagePullPolicy: Always
         name: prism-lts
         resources: {}

@@ -1,7 +1,7 @@
 exports:
   environment-specific-data:
     kafkaConnect:
-      kafkaServers: "kafka-01:9092"
+      kafkaServers: "kafka-01:4000"
       connectKeyConverterSchemaRegistryUrl: "http://kafka-01:8081"
       connectValueConverterSchemaRegistryUrl: "http://kafka-01:8081"
     kafkaConnectJob:
