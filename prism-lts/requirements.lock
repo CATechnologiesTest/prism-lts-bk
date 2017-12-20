@@ -11,5 +11,5 @@ dependencies:
 - name: local-kafka
   repository: file://../local-kafka
   version: 0.1.0
-digest: sha256:5e7a3feab3a081f15c93b57947dc7427490e648db5f37537b04688432b23209a
-generated: 2017-12-14T15:49:13.34511329-07:00
+digest: sha256:4e522733d32e8f2c98daf9fa1567a0cb6a348e5daed6cd91555e2bcf4dd295a2
+generated: 2017-12-20T11:44:00.057921724-07:00

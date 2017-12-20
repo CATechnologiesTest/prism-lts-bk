@@ -1,8 +1,9 @@
 kafkaConnect:
   replicaCount: 1
+  connectInternalKeyConverter: "org.apache.kafka.connect.json.JsonConverter"
+  connectInternalValueConverter: "org.apache.kafka.connect.json.JsonConverter"
   connectKeyConverter: "io.confluent.connect.avro.AvroConverter"
   connectValueConverter: "io.confluent.connect.avro.AvroConverter"
-  connectRestAdvertisedHostName: "localhost"
 
 k8sJob:
   imageSecretName: "quay-sts"

@@ -17,7 +17,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       containers:
-      - image: confluentinc/cp-kafka-connect:3.2.0
+      - image: confluentinc/cp-kafka-connect:3.2.2
         imagePullPolicy: Always
         name: prism-lts
         resources: {}
@@ -25,8 +25,10 @@ spec:
         - mountPath: /root/.aws
           name: aws-s3-creds
         env:
+        - name: CONNECT_LOG4J_ROOT_LEVEL
+          value: "DEBUG"
         - name: CONNECT_GROUP_ID
-          value: "connect-cluster"
+          value: "s3-worker-group"
         - name: CONNECT_OFFSET_STORAGE_TOPIC
           value: "connect-offsets"
         - name: CONNECT_CONFIG_STORAGE_TOPIC
@@ -35,24 +37,24 @@ spec:
           value: "connect-status"
         - name: CONNECT_BOOTSTRAP_SERVERS
           value: {{ .Values.kafkaConnect.kafkaServers | quote }}
-        - name: CONNECT_CLUSTER_ON_ROLES
-          value: "False"
         - name: CONNECT_INTERNAL_KEY_CONVERTER
-          value: "org.apache.kafka.connect.json.JsonConverter"
+          value: {{ .Values.kafkaConnect.connectInternalKeyConverter | quote }}
         - name: CONNECT_INTERNAL_VALUE_CONVERTER
-          value: "org.apache.kafka.connect.json.JsonConverter"
+          value: {{ .Values.kafkaConnect.connectInternalValueConverter | quote }}
         - name: CONNECT_KEY_CONVERTER
           value: {{ .Values.kafkaConnect.connectKeyConverter | quote }}
         - name: CONNECT_VALUE_CONVERTER
           value: {{ .Values.kafkaConnect.connectValueConverter | quote }}
+        - name: CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE
+          value: "false"
+        - name: CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE
+          value: "false"
         - name: CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL
           value: {{ .Values.kafkaConnect.connectKeyConverterSchemaRegistryUrl | quote }}
         - name: CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
           value: {{ .Values.kafkaConnect.connectValueConverterSchemaRegistryUrl | quote }}
         - name: CONNECT_REST_ADVERTISED_HOST_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
+          value: {{ template "name" . }}
         ports:
         - containerPort: 8083
           protocol: TCP

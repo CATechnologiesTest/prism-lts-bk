@@ -4,7 +4,7 @@ metadata:
   name: prism-lts
   labels:
     app: prism-lts
-  namespace: data-processing
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -40,7 +40,7 @@ spec:
         - name: CONNECT_STATUS_STORAGE_TOPIC
           value: "connect-status"
         - name: CONNECT_BOOTSTRAP_SERVERS
-          value: "kafka-01:9092,kafka-02:9092,kafka-03:9092"
+          value: "kafka-01:9092"
         - name: CONNECT_CLUSTER_ON_ROLES
           value: "False"
         - name: CONNECT_INTERNAL_KEY_CONVERTER

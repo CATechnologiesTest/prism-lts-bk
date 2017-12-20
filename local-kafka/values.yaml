@@ -1,0 +1,22 @@
+replicaCount: 1
+name: "kafka-01"
+nameSpace: "default"
+zookeeper:
+  name: "local-zookeeper"
+  repository: "confluentinc/cp-zookeeper"
+  imageTag: "3.2.2"
+
+kafka:
+  name: "kafka-01"
+  repository: "confluentinc/cp-kafka"
+  imageTag: "3.2.2"
+
+schemaRegistry:
+  name: "local-schema-registry"
+  repository: "confluentinc/cp-schema-registry"
+  imageTag: "3.2.2"
+
+restProxy:
+  name: "local-kafka-rest"
+  repository: "confluentinc/cp-kafka-rest"
+  imageTag: "3.2.2"

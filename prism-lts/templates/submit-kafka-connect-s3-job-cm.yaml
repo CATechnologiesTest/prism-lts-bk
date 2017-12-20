@@ -2,7 +2,7 @@ apiVersion: v1
 data:
   submit-kafka-connect-s3-job: |
     #!/bin/bash
-    curl -i --fail -X POST \
+    curl -i --connect-timeout 10 --fail -X POST \
        -H "Accept:application/json" \
        -H "Content-Type:application/json" \
        -d \
