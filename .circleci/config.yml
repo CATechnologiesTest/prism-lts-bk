@@ -13,7 +13,6 @@ jobs:
           key: repo-{{ checksum ".circle-sha" }}
           paths:
             - ~/repo
-
   test:
     machine: true
     environment:
