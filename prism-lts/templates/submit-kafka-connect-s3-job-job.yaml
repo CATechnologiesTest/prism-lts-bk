@@ -6,11 +6,13 @@ metadata:
   annotations:
     checksum/configMap: {{ include (print $.Template.BasePath "/submit-kafka-connect-s3-job-cm.yaml") . | sha256sum }}
     checksum/deployment: {{ include (print $.Template.BasePath "/deployment.yaml") . | sha256sum }}
+    {{ if eq .Values.tags.prism-lts-test-values true }}
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
-    #"helm.sh/hook": post-install
-    #"helm.sh/hook-weight": "-4"
-    # "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-4"
+     "helm.sh/hook-delete-policy": hook-succeeded
+    {{ end }}
 spec:
 spec:
   template:

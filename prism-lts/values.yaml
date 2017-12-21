@@ -19,4 +19,5 @@ kafkaConnectJob:
 tags:
   prism-lts-local-values: false
   prism-lts-dev-values: false
+  prism-lts-test-values: false
   prism-lts-prod-values: false

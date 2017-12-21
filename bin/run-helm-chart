@@ -1,0 +1,5 @@
+curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" | unzip
+
+sudo helm dep update prism-lts
+sudo helm dep build prism-lts
+sudo helm upgrade --install test-prism-lts ./prism-lts --set kafkaConnectJob.s3BucketName= --set tags.prism-lts-local-values=true  --wait
