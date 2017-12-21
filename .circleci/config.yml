@@ -15,43 +15,13 @@ jobs:
             - repo-{{ checksum ".circle-sha" }}
       - run:
           command: |
-            curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.8.4/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+            ./bin/install-minikube-and-helm
       - run:
           command: |
-            curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+            ./bin/run-helm-chart
       - run:
           command: |
-            curl -L https://kubernetes-helm.storage.googleapis.com/helm-v2.7.2-linux-amd64.tar.gz | tar -xzv && chmod +x linux-amd64/helm && mv linux-amd64/helm /usr/local/bin
-      - run:
-          command: |
-            sudo minikube start --vm-driver=none
-      - run:
-          command: |
-            sudo minikube update-context
-      - run:
-          command: |
-            JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until sudo kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
-      - run:
-          command: |
-            sudo kubectl cluster-info
-      - run:
-          command: |
-            sudo helm init
-      - run:
-          command: |
-            sudo helm dep update prism-lts
-      - run:
-          command: |
-            sudo helm dep build prism-lts
-      - run:
-          command: |
-            sudo helm upgrade --install dans-prism-lts . --set tags.prism-lts-local-values=true  --wait
-      - run:
-          command: |
-            sudo kubectl run circleci-example --image=nginx
-      - run:
-          command: |
-            sudo kubectl get deployment
+            sudo kubectl get all
 
   deploy_dev:
     machine:

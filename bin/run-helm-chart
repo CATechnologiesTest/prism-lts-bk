@@ -1,5 +1,10 @@
-curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" | unzip
-
+curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && unzip awscli-bundle.zip && sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+BUCKET_NAME=$(uuidgen)
+aws s3 mb $BUCKET_NAME
 sudo helm dep update prism-lts
 sudo helm dep build prism-lts
-sudo helm upgrade --install test-prism-lts ./prism-lts --set kafkaConnectJob.s3BucketName= --set tags.prism-lts-local-values=true  --wait
+sudo helm upgrade --install test-prism-lts ./prism-lts --set "kafkaConnectJob.s3BucketName=$BUCKET_NAME" --set tags.prism-lts-local-values=true  --wait
+(sudo kubectl port-forward $(kubectl get po -o name -l app=prism-lts --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082
+./bin/post-message
+sleep 3
+aws s3 ls "s3://$BUCKET_NAME"
