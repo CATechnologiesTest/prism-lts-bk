@@ -93,10 +93,7 @@ workflows:
   version: 2
   build_and_deploy:
     jobs:
-      - checkout_code
       - test:
-          requires:
-            - checkout_code
       - deploy_dev:
           requires:
             - test
