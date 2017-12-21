@@ -4,18 +4,34 @@
 
 ## Local Development
 
+### Initial Setup
+
 - `eval $(minikube docker-env)` to change docker contexts to minikube
-- `docker build . -f DockerfileCurl -t bash-curl` to build the docker image for the job
 - Setup AWS secrets, with `kubectl create secret generic aws-s3-creds --from-file ~/.aws/credentials`
-- `kubectl expose deployment prism-lts --type=ClusterIP`
-- `kubectl apply -f ./local/deployment.yml --validate=false`
-- `kubectl apply -f ./local/submit-kafka-connect-s3-job-cm.yml --validate=false`
-- `kubectl apply -f ./local/submit-kafka-connect-s3-job-job.yml --validate=false`
-- `./tail-logs` to `tail -f` the kafka conenct container
+- Setup Quay credentials, go to `https://quay.io/organization/stsatlas?tab=robots`, select `stsatlas+platform_deployer` and follow the directions for Kubernetes Secret
+- Install helm with `brew install kubernetes-helm`
+- Run `helm init`
+- Get dependencies for prism-lts by running `helm dep update prism-lts && helm dep build prism-lts`
+
+### Updating Kafka Chart
+If you update the kafka chart, you will need to update and build dependencies in prism-lts again.
+
+- Run `helm dep update`
+- Run `helm dep build`
+
+### Running Prism-lts
+`<release_name>` is how you will refer to your installation of the helm chart in your local cluster.
+- Run `helm upgrade --install <release_name> ./prism-lts --set tags.prism-lts-local-values=true`
+
+### Changing metadata labels or annotations
+If you change metadata labels or annotations, helm does not know that the previous release running in your minikube cluster is the same app.
+Delete your old release by running `helm delete <release_name> --purge`
+The `--purge` flag removes references that helm has to track your release.
+
 
 ### To Send Data to the REST Proxy
 - `kubectl port-forward $(kubectl get po -o name -l app=prism-lts --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082`
-- `./post-message` to send a message into the kafka bus 
+- `./prism-lts/bin/post-message` to send a message into the kafka bus 
 
 ## Must Haves to Meet Customer Requirements
 
