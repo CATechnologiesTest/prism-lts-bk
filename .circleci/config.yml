@@ -106,15 +106,12 @@ workflows:
   build_and_deploy:
     jobs:
       - checkout_code
-      - test_entitled:
+      - test:
           requires:
             - checkout_code
-      - build_image:
-          requires:
-            - test
       - deploy_dev:
           requires:
-            - build_image
+            - test
       - deploy_prod:
           requires:
-            - build_image
+            - test
