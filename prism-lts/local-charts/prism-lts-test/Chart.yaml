@@ -1,4 +1,4 @@
 apiVersion: v1
 description: A Helm chart for Kubernetes
-name: prism-lts-local
+name: prism-lts-test
 version: 0.1.0

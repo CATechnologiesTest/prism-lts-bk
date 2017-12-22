@@ -1,23 +1,30 @@
 dependencies:
 - name: prism-lts-local
   version: "0.1.0"
-  repository: "file://my-charts/prism-lts-local"
+  repository: "file://local-charts/prism-lts-local"
   tags:
     - prism-lts-local-values
   import-values:
     - environment-specific-data
 - name: prism-lts-dev
   version: "0.1.0"
-  repository: "file://my-charts/prism-lts-dev"
+  repository: "file://local-charts/prism-lts-dev"
   tags:
     - prism-lts-dev-values
   import-values:
     - environment-specific-data
 - name: prism-lts-prod
   version: "0.1.0"
-  repository: "file://my-charts/prism-lts-prod"
+  repository: "file://local-charts/prism-lts-prod"
   tags:
     - prism-lts-prod-values
+  import-values:
+    - environment-specific-data
+- name: prism-lts-test
+  version: "0.1.0"
+  repository: "file://local-charts/prism-lts-test"
+  tags:
+    - prism-lts-test-values
   import-values:
     - environment-specific-data
 - name: local-kafka

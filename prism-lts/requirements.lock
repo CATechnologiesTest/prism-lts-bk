@@ -1,12 +1,15 @@
 dependencies:
 - name: prism-lts-local
-  repository: file://my-charts/prism-lts-local
+  repository: file://local-charts/prism-lts-local
   version: 0.1.0
 - name: prism-lts-dev
-  repository: file://my-charts/prism-lts-dev
+  repository: file://local-charts/prism-lts-dev
   version: 0.1.0
 - name: prism-lts-prod
-  repository: file://my-charts/prism-lts-prod
+  repository: file://local-charts/prism-lts-prod
+  version: 0.1.0
+- name: prism-lts-test
+  repository: file://local-charts/prism-lts-test
   version: 0.1.0
 - name: local-kafka
   repository: file://../local-kafka
@@ -14,5 +17,5 @@ dependencies:
 - name: test-kafka
   repository: file://../local-kafka
   version: 0.1.0
-digest: sha256:bdef70ebe329c6560f4c9b2f24e18c85a9bee49ad90d8090e6f5b866c1aaff2a
-generated: 2017-12-22T08:56:14.724459787-07:00
+digest: sha256:381de7ce1f2598aa11d2308f73d65eec397749468200c56c99c76cf920add842
+generated: 2017-12-22T09:19:28.311230035-07:00
