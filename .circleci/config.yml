@@ -16,13 +16,10 @@ jobs:
       - run:
           command: |
             ./bin/install-minikube-and-helm
-      - run:
-          command: |
             ./bin/run-helm-chart
       - run:
           command: |
             sudo kubectl get all
-
   deploy_dev:
     machine:
       enabled: true
