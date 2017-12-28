@@ -4,6 +4,7 @@ BUCKET_NAME=$(uuidgen)
 echo $BUCKET_NAME
 aws s3 mb "s3://$BUCKET_NAME"
 helm init
+helm serve &
 cd prism-lts
 helm dep update
 helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$BUCKET_NAME" --set tags.prism-lts-local-values=true  --wait
