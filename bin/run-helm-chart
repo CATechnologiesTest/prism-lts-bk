@@ -7,7 +7,7 @@ helm init
 helm serve &
 cd prism-lts
 helm dep update
-helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$BUCKET_NAME" --set tags.prism-lts-local-values=true  --wait
+helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$BUCKET_NAME" --set tags.prism-lts-test-values=true  --wait
 kubectl port-forward $(kubectl get po -o name -l app=prism-lts --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082
 ./bin/post-message
 sleep 5
