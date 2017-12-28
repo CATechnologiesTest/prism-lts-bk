@@ -30,4 +30,6 @@ dependencies:
 - name: local-kafka
   version: "0.1.0"
   repository: "file://../local-kafka"
-  condition: tags.prism-lts-local-values,tags.prism-lts-test-values  
+  tags:
+    - prism-lts-dev-values
+    - prism-lts-test-values
