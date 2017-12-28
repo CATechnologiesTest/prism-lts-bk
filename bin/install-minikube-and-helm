@@ -12,3 +12,4 @@ minikube update-context
 JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
 kubectl cluster-info
 helm init
+JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; kubectl get po --namespace=kube-system -l app=helm -o jsonpath="$JSONPATH" | grep -q "Ready=True"; do sleep 1; done
