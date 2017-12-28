@@ -6,7 +6,8 @@ aws s3 mb "s3://$BUCKET_NAME"
 cd prism-lts
 helm dep update
 helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$BUCKET_NAME" --set tags.prism-lts-test-values=true  --wait
-kubectl port-forward $(kubectl get po -o name -l app=prism-lts --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082
+JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get po -l app=local-kafka-rest -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
+kubectl port-forward $(kubectl get po -o name -l app=local-kafka-rest --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082
 ./bin/post-message
 sleep 5
 aws s3 ls "s3://$BUCKET_NAME"
