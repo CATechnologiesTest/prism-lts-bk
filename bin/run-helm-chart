@@ -79,7 +79,7 @@ main () {
   helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
   repeat_and_sleep 'check_pod_is_ready prism-lts' "1"
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
-  port_forward_pod "local-kafka-rest" "8082"
+  port_forward_pod "local-kafka-rest" "default" "8082"
   ./bin/post-message
   repeat_and_sleep 'check_s3' "3"
 }
