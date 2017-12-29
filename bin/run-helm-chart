@@ -34,9 +34,10 @@ repeat_and_sleep() {
 }
 
 set_quay_secret() {
+  set +x
   local namespace="${1:-default}"
   local quay_auth="$(echo "$QUAY_USERNAME:$QUAY_PASSWORD" | base64)"
-  local quay_auth_json="$(echo '{
+  local quay_auth_json="$(echo '{\
   "auths": {
     "quay.io": {
       "auth": "'"$quay_auth"'",
@@ -53,9 +54,11 @@ metadata:
 data:
   .dockerconfigjson:
 '"$quay_auth_json"'
-type: kubernetes.io/dockerconfigjson' > quay-sts.yaml
-  
+type: kubernetes.io/dockerconfigjson
+' > quay-sts.yaml
+  cat quay-sts.yaml
   kubectl create -f quay-sts.yaml -n "$namespace"
+  set -x
 }
 
 prep_s3() {
@@ -74,7 +77,7 @@ clean_up_s3() {
 
 main () {
   prep_s3
-  { set_quay_secret } 2> /dev/null
+  set_quay_secret
   cd prism-lts
   helm dep update
   helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
@@ -85,3 +88,4 @@ main () {
 }
 
 main "$@"
+
