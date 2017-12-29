@@ -5,16 +5,10 @@ bucket_name=$(uuidgen)
 check_pod_is_ready() {
   local app_name="$1"
   local namespace="${2:-default}"
-  local num_ready="${3:-1}"
   local jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
   
   local pod_conditions="$(kubectl get po -n "$namespace" -l app="$app_name" -o jsonpath="$jsonpath" 2>&1)"
   echo "$pod_conditions" | grep -q "Ready=True"
-  if (( "$?" >= "$num_ready" )); then
-    echo "1"
-  else
-    echo "0"
-  fi
 }
 
 port_forward_pod() {
