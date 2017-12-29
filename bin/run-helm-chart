@@ -63,6 +63,7 @@ set_quay_secret() {
 }
 
 set_aws_secret() {
+  ls $HOME/.aws/
   kubectl create secret generic aws-s3-creds --from-file=$HOME/.aws/credentials
 }
 
