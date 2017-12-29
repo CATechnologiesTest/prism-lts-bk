@@ -36,15 +36,15 @@ repeat_and_sleep() {
 set_quay_secret() {
   set +x
   local namespace="${1:-default}"
-  local quay_auth="$(echo "$QUAY_USERNAME:$QUAY_PASSWORD" | base64)"
-  local quay_auth_json="$(echo '{
+  local quay_auth="$(echo -n "$QUAY_USERNAME:$QUAY_PASSWORD" | base64 -w 0)"
+  local quay_auth_json="$(echo -n '{
   "auths": {
     "quay.io": {
       "auth": "'"$quay_auth"'",
       "email": ""
     }
   }
-}' | base64)"
+}' | base64 -w 0)"
   
   printf "apiVersion: v1\nkind: Secret\nmetadata:\n  name: quay-sts\ndata:\n  .dockerconfigjson: %s\ntype: kubernetes.io/dockerconfigjson" "$quay_auth_json" > quay-sts.yaml
   kubectl create -f quay-sts.yaml -n "$namespace"
