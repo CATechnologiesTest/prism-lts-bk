@@ -1,15 +1,87 @@
 #!/bin/bash -ex
-curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && unzip awscli-bundle.zip && sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
-BUCKET_NAME=$(uuidgen)
-{ kubectl create secret docker-registry quay-sts --docker-password="$QUAY_PASSWORD" --docker-username="$QUAY_USERNAME" --docker-email="none"; } 2> /dev/null
-aws s3 mb "s3://$BUCKET_NAME"
-cd prism-lts
-helm dep update
-helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$BUCKET_NAME" --set tags.prism-lts-test-values=true  --wait
-JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get po -l app=local-kafka-rest -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
-kubectl port-forward $(kubectl get po -o name -l app=local-kafka-rest --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082 &
-./bin/post-message
-sleep 5
-aws s3 ls "s3://$BUCKET_NAME"
-aws s3 rm "s3://$BUCKET_NAME" --recursive
-aws s3 rb "s3://$BUCKET_NAME"
+
+bucket_name=$(uuidgen)
+
+check_pod_is_ready() {
+  local app_name="$1"
+  local namespace="${2:-default}"
+  local num_ready="${3:-1}"
+  local jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
+  
+  local pod_conditions="$(kubectl get po -n "$namespace" -l app="$app_name" -o jsonpath="$jsonpath" 2>&1)"
+  local pod_ready="$(echo "$pod_conditions" | grep -q "Ready=True")"
+  (( "$pod_ready" > "$num_ready" ))
+  return
+}
+
+port_forward_pod() {
+  local app_name="$1"
+  local namespace="${2:-default}"
+  local port_num="$3"
+  local jsonpath='{range .items[*]}{@.metadata.name}{end}'
+  kubectl port-forward "$(kubectl get po -o jsonpath="$jsonpath" -l app="$app_name" | tail -n 1)" "$port_num":"$port_num" &
+}
+
+repeat_and_sleep() {
+  local max_sleep="${3:-30}"
+  local total_sleep=0
+  local command_result="$1"
+  until [[ -n "$command_result" || "$total_sleep" -ge "$max_sleep" ]]; do 
+    sleep "$2";
+    command_result="$1"
+    let "$total_sleep + $2"
+  done
+}
+
+set_quay_secret() {
+  local namespace="${1:-default}"
+  local quay_auth="$(echo "$QUAY_USERNAME:$QUAY_PASSWORD" | base64)"
+  local quay_auth_json="$(echo '{
+  "auths": {
+    "quay.io": {
+      "auth": "'"$quay_auth"'",
+      "email": ""
+    }
+  }
+}' | base64)"
+  
+  echo '
+apiVersion: v1
+kind: Secret
+metadata:
+  name: quay-sts
+data:
+  .dockerconfigjson:
+'"$quay_auth_json"'
+type: kubernetes.io/dockerconfigjson' > quay-sts.yaml
+  
+  kubectl create -f quay-sts.yaml -n "$namespace"
+}
+
+prep_s3() {
+  curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && unzip awscli-bundle.zip && sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+  aws s3 mb "s3://$bucket_name"
+}
+
+check_s3() {
+  aws s3 ls "s3://$bucket_name/"
+}
+
+clean_up_s3() {
+  aws s3 rm "s3://$bucket_name" --recursive
+  aws s3 rb "s3://$bucket_name"
+}
+
+main () {
+  prep_s3
+  { set_quay_secret } 2> /dev/null
+  cd prism-lts
+  helm dep update
+  helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
+  repeat_and_sleep "$(check_pod_is_ready 'prism-lts')" "1"
+  repeat_and_sleep "$(check_pod_is_ready 'local-kafka-rest')" "1"
+  ./bin/post-message
+  repeat_and_sleep "$(check_s3)" "3"
+}
+
+main "$@"
