@@ -8,7 +8,7 @@ check_pod_is_ready() {
   local jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
   
   local pod_conditions="$(kubectl get po -n "$namespace" -l app="$app_name" -o jsonpath="$jsonpath" 2>&1)"
-  echo "$pod_conditions" | grep -q "Ready=True"
+  echo "$pod_conditions" | grep "Ready=True"
 }
 
 port_forward_pod() {
@@ -62,9 +62,14 @@ set_quay_secret() {
   set -x
 }
 
+set_aws_secret() {
+  kubectl create secret generic aws-s3-creds --from-file=$HOME/.aws/credentials
+}
+
 main () {
   prep_s3
   set_quay_secret
+  set_aws_secret
   cd prism-lts
   helm dep update
   helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
