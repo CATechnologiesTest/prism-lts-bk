@@ -46,8 +46,7 @@ set_quay_secret() {
   }
 }' | base64)"
   
-  echo '
-apiVersion: v1
+  echo 'apiVersion: v1
 kind: Secret
 type: kubernetes.io/dockerconfigjson
 metadata:
@@ -73,7 +72,7 @@ clean_up_s3() {
 }
 
 main () {
-  prep_s3
+  #prep_s3
   set_quay_secret
   cd prism-lts
   helm dep update
