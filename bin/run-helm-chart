@@ -11,9 +11,9 @@ check_pod_is_ready() {
   local pod_conditions="$(kubectl get po -n "$namespace" -l app="$app_name" -o jsonpath="$jsonpath" 2>&1)"
   echo "$pod_conditions" | grep -q "Ready=True"
   if (( "$?" >= "$num_ready" )); then
-    return "1"
+    echo "1"
   else
-    return "0"
+    echo "0"
   fi
 }
 
@@ -40,13 +40,14 @@ clean_up_s3() {
 }
 
 repeat_and_sleep() {
+  local command_result
   local max_sleep="${3:-30}"
   local total_sleep=0
-  local command_result="$1"
+  eval command_result="$1"
   until [[ -n "$command_result" || "$total_sleep" -ge "$max_sleep" ]]; do 
     sleep "$2";
-    command_result="$1"
-    let "$total_sleep + $2"
+    eval command_result="$1"
+    let "$total_sleep+$2"
   done
 }
 
