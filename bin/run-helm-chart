@@ -66,15 +66,15 @@ clean_up_s3() {
 }
 
 main () {
-  #prep_s3
+  prep_s3
   set_quay_secret
-  #cd prism-lts
-  #helm dep update
-  #helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
-  #repeat_and_sleep "$(check_pod_is_ready 'prism-lts')" "1"
-  #repeat_and_sleep "$(check_pod_is_ready 'local-kafka-rest')" "1"
-  #./bin/post-message
-  #repeat_and_sleep "$(check_s3)" "3"
+  cd prism-lts
+  helm dep update
+  helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
+  repeat_and_sleep "$(check_pod_is_ready 'prism-lts')" "1"
+  repeat_and_sleep "$(check_pod_is_ready 'local-kafka-rest')" "1"
+  ./bin/post-message
+  repeat_and_sleep "$(check_s3)" "3"
 }
 
 main "$@"
