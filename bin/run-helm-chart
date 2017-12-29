@@ -9,9 +9,12 @@ check_pod_is_ready() {
   local jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
   
   local pod_conditions="$(kubectl get po -n "$namespace" -l app="$app_name" -o jsonpath="$jsonpath" 2>&1)"
-  local pod_ready="$(echo "$pod_conditions" | grep -q "Ready=True")"
-  (( "$pod_ready" > "$num_ready" ))
-  return
+  echo "$pod_conditions" | grep -q "Ready=True"
+  if (( "$?" >= "$num_ready" )); then
+    return "1"
+  else
+    return "0"
+  fi
 }
 
 port_forward_pod() {
@@ -20,6 +23,20 @@ port_forward_pod() {
   local port_num="$3"
   local jsonpath='{range .items[*]}{@.metadata.name}{end}'
   kubectl port-forward "$(kubectl get po -o jsonpath="$jsonpath" -l app="$app_name" | tail -n 1)" "$port_num":"$port_num" &
+}
+
+prep_s3() {
+  curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && unzip awscli-bundle.zip && sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+  aws s3 mb "s3://$bucket_name"
+}
+
+check_s3() {
+  aws s3 ls "s3://$bucket_name/"
+}
+
+clean_up_s3() {
+  aws s3 rm "s3://$bucket_name" --recursive
+  aws s3 rb "s3://$bucket_name"
 }
 
 repeat_and_sleep() {
@@ -51,30 +68,16 @@ set_quay_secret() {
   set -x
 }
 
-prep_s3() {
-  curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && unzip awscli-bundle.zip && sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
-  aws s3 mb "s3://$bucket_name"
-}
-
-check_s3() {
-  aws s3 ls "s3://$bucket_name/"
-}
-
-clean_up_s3() {
-  aws s3 rm "s3://$bucket_name" --recursive
-  aws s3 rb "s3://$bucket_name"
-}
-
 main () {
   prep_s3
   set_quay_secret
   cd prism-lts
   helm dep update
   helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
-  repeat_and_sleep "$(check_pod_is_ready 'prism-lts')" "1"
-  repeat_and_sleep "$(check_pod_is_ready 'local-kafka-rest')" "1"
+  repeat_and_sleep '$(check_pod_is_ready "prism-lts")' "1"
+  repeat_and_sleep '$(check_pod_is_ready "local-kafka-rest")' "1"
   ./bin/post-message
-  repeat_and_sleep "$(check_s3)" "3"
+  repeat_and_sleep '$(check_s3)' "3"
 }
 
 main "$@"
