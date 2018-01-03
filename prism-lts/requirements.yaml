@@ -31,5 +31,5 @@ dependencies:
   version: "0.1.0"
   repository: "file://../local-kafka"
   tags:
-    - prism-lts-dev-values
+    - prism-lts-local-values
     - prism-lts-test-values
