@@ -19,9 +19,14 @@ port_forward_pod() {
   kubectl port-forward "$(kubectl get po -o jsonpath="$jsonpath" -l app="$app_name" | tail -n 1)" "$port_num":"$port_num" &
 }
 
-prep_s3() {
+install_aws_cli() {
   curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && unzip awscli-bundle.zip && sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
-  aws s3 mb "s3://$bucket_name" --region us-west-2
+  aws s3 mb "s3://$bucket_name" --region "us-west-2"
+}
+
+prep_s3() {
+  command -v aws &>/dev/null || install_aws_cli
+  aws s3 mb "s3://$bucket_name"
 }
 
 check_s3() {
@@ -80,7 +85,7 @@ main () {
   repeat_and_sleep 'check_pod_is_ready prism-lts' "1"
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
   port_forward_pod "local-kafka-rest" "default" "8082"
-  sleep 1
+  sleep 15
   ./bin/post-message
   repeat_and_sleep 'check_s3' "3"
   clean_up_s3
