@@ -21,7 +21,7 @@ port_forward_pod() {
 
 prep_s3() {
   curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && unzip awscli-bundle.zip && sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
-  aws s3 mb "s3://$bucket_name"
+  aws s3 mb "s3://$bucket_name" --region us-west-2
 }
 
 check_s3() {
