@@ -13,7 +13,7 @@
   - Run `kubectl create -f /path/to/stsatlas-platform-deployer-secret.yml`
 - Install helm with `brew install kubernetes-helm`
 - Run `helm init`
-- Get dependencies for prism-lts by running `helm dep update prism-lts && helm dep build prism-lts`
+- Get dependencies for prism-lts by running `helm dep update prism-lts && helm dep build prism-lts` from the root of this project
 
 ### Updating Kafka Chart
 If you update the kafka chart, you will need to update and build dependencies in prism-lts again.
