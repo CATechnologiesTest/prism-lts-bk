@@ -28,7 +28,8 @@ jobs:
           command: cat .s3-bucket-name | aws s3 rm --recursive && cat .s3-bucket-name | aws s3 rb
           when: always
       - save_cache:
-          path: ~/repo
+          paths:
+            - ~/repo
           key: repo-{{ checksum ".circle-sha" }}
   deploy_dev:
     machine:
