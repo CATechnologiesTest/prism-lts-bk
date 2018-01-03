@@ -1,12 +1,12 @@
 #!/bin/bash -ex
 
-bucket_name=$(uuidgen)
+bucket_name=$(cat .s3-bucket-name)
 
 check_pod_is_ready() {
   local app_name="$1"
   local namespace="${2:-default}"
   local jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
-  
+
   local pod_conditions="$(kubectl get po -n "$namespace" -l app="$app_name" -o jsonpath="$jsonpath" 2>&1)"
   echo "$pod_conditions" | grep "Ready=True"
 }
@@ -37,7 +37,7 @@ repeat_and_sleep() {
   local max_sleep="${3:-30}"
   total_sleep=0
   local command_result="$($1)"
-  until [[ -n "$command_result" || "$total_sleep" -ge "$max_sleep" ]]; do 
+  until [[ -n "$command_result" || "$total_sleep" -ge "$max_sleep" ]]; do
     sleep "$2"
     local command_result="$($1)"
     let total_sleep+="$2"
@@ -56,24 +56,24 @@ set_quay_secret() {
     }
   }
 }' | base64 -w 0)"
-  
+
   printf "apiVersion: v1\nkind: Secret\nmetadata:\n  name: quay-sts\ndata:\n  .dockerconfigjson: %s\ntype: kubernetes.io/dockerconfigjson" "$quay_auth_json" > quay-sts.yaml
   kubectl create -f quay-sts.yaml -n "$namespace"
   set -x
 }
 
-set_aws_secret() {
-  mkdir -p $HOME/.aws
-  echo -n '[default]
-aws_access_key_id = '"$AWS_ACCESS_KEY_ID"'
-aws_secret_access_key = '"$AWS_SECRET_ACCESS_KEY" > "$HOME/.aws/credentials"
-  kubectl create secret generic aws-s3-creds --from-file=$HOME/.aws/credentials
-}
+# set_aws_secret() {
+#   mkdir -p $HOME/.aws
+#   echo -n '[default]
+# aws_access_key_id = '"$AWS_ACCESS_KEY_ID"'
+# aws_secret_access_key = '"$AWS_SECRET_ACCESS_KEY" > "$HOME/.aws/credentials"
+#   kubectl create secret generic aws-s3-creds --from-file=$HOME/.aws/credentials
+# }
 
 main () {
   prep_s3
   set_quay_secret
-  set_aws_secret
+  # set_aws_secret
   cd prism-lts
   helm dep update
   helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
@@ -86,4 +86,3 @@ main () {
 }
 
 main "$@"
-
