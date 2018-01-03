@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 
-bucket_name=$(cat .s3-bucket-name)
+bucket_name=$(uuidgen)
 
 check_pod_is_ready() {
   local app_name="$1"
@@ -83,6 +83,7 @@ main () {
   sleep 1
   ./bin/post-message
   repeat_and_sleep 'check_s3' "3"
+  clean_up_s3
 }
 
-main "$@"
+main "$@" || clean_up_s3 && exit 1

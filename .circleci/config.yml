@@ -14,19 +14,12 @@ jobs:
           keys:
             - repo-{{ checksum ".circle-sha" }}
       - run:
-          name: save unique bucket name to file
-          command: echo "s3://connect-test-$(uuidgen)" > .s3-bucket-name
-      - run:
           command: |
             ./bin/install-minikube-and-helm
             ./bin/run-helm-chart
       - run:
           command: |
             sudo kubectl get all
-      - run:
-          name: clean up s3 bucket
-          command: cat .s3-bucket-name | aws s3 rm --recursive && cat .s3-bucket-name | aws s3 rb
-          when: always
       - save_cache:
           paths:
             - ~/repo
