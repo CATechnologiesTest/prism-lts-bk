@@ -9,8 +9,8 @@
 - `eval $(minikube docker-env)` to change docker contexts to minikube
 - Setup AWS secrets, with `kubectl create secret generic aws-s3-creds --from-file ~/.aws/credentials`
 - Setup Quay credentials, go to `https://quay.io/organization/stsatlas?tab=robots`, select `stsatlas+platform_deployer` and follow the directions for Kubernetes Secret
--- Rename the secret (in the file downloaded) to be `quay-sts`
--- Run `kubectl create -f /path/to/stsatlas-platform-deployer-secret.yml`
+  - Rename the secret (in the file downloaded) to be `quay-sts`
+  - Run `kubectl create -f /path/to/stsatlas-platform-deployer-secret.yml`
 - Install helm with `brew install kubernetes-helm`
 - Run `helm init`
 - Get dependencies for prism-lts by running `helm dep update prism-lts && helm dep build prism-lts`
