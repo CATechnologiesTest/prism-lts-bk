@@ -14,8 +14,8 @@ check_pod_is_ready() {
 check_job_is_done() {
   local namespace="${1:-default}"
   local jsonpath='{range .items[*]}{@.status.conditions}{end}'
-  kubectl get jobs -n "$namespace" -o jsonpath="$jsonpath" 2>&1
-  local job_conditions="$(kubectl get jobs -n "$namespace" -o jsonpath="$jsonpath" 2>&1)"
+  kubectl get jobs -n "$namespace"
+  local job_conditions="$(kubectl get jobs -n "$namespace" -o jsonpath="$jsonpath")"
   echo "$job_conditions" | grep "type:Complete status:True"
 }
 
