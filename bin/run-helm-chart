@@ -11,6 +11,14 @@ check_pod_is_ready() {
   echo "$pod_conditions" | grep "Ready=True"
 }
 
+check_job_is_done() {
+  local namespace="${1:-default}"
+  local jsonpath_status='{range .items[*]}{@.status.conditions[*]}{end}'
+
+  local job_conditions="$(kubectl get jobs -n "$namespace" -o jsonpath="$jsonpath" 2>&1)"
+  echo "$job_conditions" | grep "type:Complete status:True"
+}
+
 post_some_data() {
   local app_name="$1"
   local namespace="${2:-default}"
@@ -87,10 +95,9 @@ main () {
   helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
   repeat_and_sleep 'check_pod_is_ready prism-lts' "1"
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
-  sleep 30
+  repeat_and_sleep 'check_job_is_done' "2"
   post_some_data "local-kafka-rest" "default" "8082"
-  sleep 5
-  repeat_and_sleep 'check_s3' "3"
+  repeat_and_sleep 'check_s3' "2"
   clean_up_s3
 }
 
