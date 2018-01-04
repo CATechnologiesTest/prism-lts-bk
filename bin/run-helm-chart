@@ -11,22 +11,28 @@ check_pod_is_ready() {
   echo "$pod_conditions" | grep "Ready=True"
 }
 
+send_example_data() {
+    curl -vX POST -H "Content-Type: application/vnd.kafka.avro.v2+json" \
+         -H "Accept: application/vnd.kafka.v2+json" \
+         --url "http://localhost:8082/topics/ac-user-event" \
+         --data '{"value_schema":"{\"type\":\"record\",\"name\":\"user_event\",\"namespace\":\"com.sts\",\"fields\":[{\"name\":\"product_id\",\"type\":\"string\"},{\"name\":\"user_oid\",\"type\":\"string\"},{\"name\":\"first_login\",\"type\":\"string\"},{\"name\":\"product_instance_id\",\"type\":\"string\"},{\"name\":\"metric_date\",\"type\":\"string\"},{\"name\":\"slug_name\",\"type\":\"string\"},{\"name\":\"edition\",\"type\":\"string\"},{\"name\":\"stack\",\"type\":\"string\"}]}","records":[{"value":{"product_id":"wakawakawaka","user_oid":"someothergreatinfo","first_login":"meow","product_instance_id":"thebest","metric_date":"2018-01-04","slug_name":"sluggy-slug-slug","edition":"numero-uno","stack":"full-stack"}}]}'
+}
+
 port_forward_pod() {
   local app_name="$1"
   local namespace="${2:-default}"
   local port_num="$3"
   local jsonpath='{range .items[*]}{@.metadata.name}{end}'
-  kubectl port-forward "$(kubectl get po -o jsonpath="$jsonpath" -l app="$app_name" | tail -n 1)" "$port_num":"$port_num" &
+  kubectl exec -it "$(kubectl get po -o jsonpath="$jsonpath" -l app="$app_name" | tail -n 1)" send_example_data
 }
 
 install_aws_cli() {
   curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && unzip awscli-bundle.zip && sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
-  aws s3 mb "s3://$bucket_name" --region "us-west-2"
 }
 
 prep_s3() {
   command -v aws &>/dev/null || install_aws_cli
-  aws s3 mb "s3://$bucket_name"
+  aws s3 mb "s3://$bucket_name" --region "us-west-2"
 }
 
 check_s3() {
