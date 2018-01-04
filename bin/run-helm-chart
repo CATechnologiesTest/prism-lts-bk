@@ -96,7 +96,7 @@ main () {
   helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
   repeat_and_sleep 'check_pod_is_ready prism-lts' "1"
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
-  repeat_and_sleep 'check_job_is_done' "10" "90"
+  repeat_and_sleep 'check_job_is_done' "15" "120"
   post_some_data "local-kafka-rest" "default" "8082"
   repeat_and_sleep 'check_s3' "2"
   clean_up_s3
