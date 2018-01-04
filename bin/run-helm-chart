@@ -11,19 +11,16 @@ check_pod_is_ready() {
   echo "$pod_conditions" | grep "Ready=True"
 }
 
-send_example_data() {
-    curl -vX POST -H "Content-Type: application/vnd.kafka.avro.v2+json" \
-         -H "Accept: application/vnd.kafka.v2+json" \
-         --url "http://localhost:8082/topics/ac-user-event" \
-         --data '{"value_schema":"{\"type\":\"record\",\"name\":\"user_event\",\"namespace\":\"com.sts\",\"fields\":[{\"name\":\"product_id\",\"type\":\"string\"},{\"name\":\"user_oid\",\"type\":\"string\"},{\"name\":\"first_login\",\"type\":\"string\"},{\"name\":\"product_instance_id\",\"type\":\"string\"},{\"name\":\"metric_date\",\"type\":\"string\"},{\"name\":\"slug_name\",\"type\":\"string\"},{\"name\":\"edition\",\"type\":\"string\"},{\"name\":\"stack\",\"type\":\"string\"}]}","records":[{"value":{"product_id":"wakawakawaka","user_oid":"someothergreatinfo","first_login":"meow","product_instance_id":"thebest","metric_date":"2018-01-04","slug_name":"sluggy-slug-slug","edition":"numero-uno","stack":"full-stack"}}]}'
-}
-
-port_forward_pod() {
+post_some_data() {
   local app_name="$1"
   local namespace="${2:-default}"
   local port_num="$3"
   local jsonpath='{range .items[*]}{@.metadata.name}{end}'
-  kubectl exec -it "$(kubectl get po -o jsonpath="$jsonpath" -l app="$app_name" | tail -n 1)" send_example_data
+  kubectl exec -it "$(kubectl get po -o jsonpath="$jsonpath" -l app="$app_name" | tail -n 1)" -- \
+          curl -vX POST -H "Content-Type: application/vnd.kafka.avro.v2+json" \
+          -H "Accept: application/vnd.kafka.v2+json" \
+          --url "http://localhost:8082/topics/ac-user-event" \
+          --data '{"value_schema":"{\"type\":\"record\",\"name\":\"user_event\",\"namespace\":\"com.sts\",\"fields\":[{\"name\":\"product_id\",\"type\":\"string\"},{\"name\":\"user_oid\",\"type\":\"string\"},{\"name\":\"first_login\",\"type\":\"string\"},{\"name\":\"product_instance_id\",\"type\":\"string\"},{\"name\":\"metric_date\",\"type\":\"string\"},{\"name\":\"slug_name\",\"type\":\"string\"},{\"name\":\"edition\",\"type\":\"string\"},{\"name\":\"stack\",\"type\":\"string\"}]}","records":[{"value":{"product_id":"wakawakawaka","user_oid":"someothergreatinfo","first_login":"meow","product_instance_id":"thebest","metric_date":"2018-01-04","slug_name":"sluggy-slug-slug","edition":"numero-uno","stack":"full-stack"}}]}'
 }
 
 install_aws_cli() {
@@ -90,9 +87,8 @@ main () {
   helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
   repeat_and_sleep 'check_pod_is_ready prism-lts' "1"
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
-  port_forward_pod "local-kafka-rest" "default" "8082"
-  sleep 15
-  ./bin/post-message
+  post_some_data "local-kafka-rest" "default" "8082"
+  sleep 5
   repeat_and_sleep 'check_s3' "3"
   clean_up_s3
 }
