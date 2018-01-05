@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: submit-kafka-connect-s3-job
+  namespace: {{ .Values.namespace | quote }}
+  annotations:
+    checksum/configMap: {{ include (print $.Template.BasePath "/submit-kafka-connect-s3-job-cm.yaml") . | sha256sum }}
+    checksum/deployment: {{ include (print $.Template.BasePath "/deployment.yaml") . | sha256sum }}
+spec:
+  template:
+    metadata:
+      name: submit-kafka-connect-s3-job
+    spec:
+      imagePullSecrets:
+      - name: {{ .Values.k8sJob.imageSecretName | quote }} 
+      containers:
+      - name: submit-kafka-connect-s3-job
+        image: {{ .Values.k8sJob.image | quote }}
+        command: ["bash", "-ex", "/tmp/submit-kafka-connect-s3-job"]
+        volumeMounts:
+        - mountPath: /tmp
+          name: submit-job-script
+      restartPolicy: OnFailure
+      volumes:
+      - configMap:
+          defaultMode: 500
+          name: submit-job-script
+        name: submit-job-script

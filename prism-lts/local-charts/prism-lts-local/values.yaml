@@ -1,12 +1,15 @@
 exports:
   environment-specific-data:
     kafkaConnect:
-      kafkaServers: "kafka-01:4000"
+      kafkaServers: "local-kafka:9092"
       connectKeyConverterSchemaRegistryUrl: "http://local-schema-registry:8081"
       connectValueConverterSchemaRegistryUrl: "http://local-schema-registry:8081"
-    kafkaConnectJob:
-      name: "prism-lts-s3-job"
+    healthMetricsConnectJob:
+      name: "lts-local-health-metrics-kc-job"
+      s3BucketName: "local-prism-lts"
+      serviceDomainName: "prism-lts"
+    acUserEventConnectJob:
+      name: "lts-local-ac-user-event-kc-job"
       s3BucketName: "local-prism-lts"
       serviceDomainName: "prism-lts"
     namespace: "default"
-

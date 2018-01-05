@@ -9,9 +9,16 @@ k8sJob:
   imageSecretName: "quay-sts"
   image: "quay.io/stsatlas/bash-curl:21d470eaddc292462c07d08ca19319caf2e55417"
 
-kafkaConnectJob:
-  name: "lts-test"
+healthMetricsConnectJob:
+  name: "lts-test-health-metrics-kc-job"
   topics: "health-metrics"
+  timestampExtractor: "Record"
+  flushSize: 1
+  s3BucketName: "prism-lts-local"
+
+acUserEventConnectJob:
+  name: "lts-test-ac-user-event-kc-job"
+  topics: "ac-user-event"
   timestampExtractor: "Record"
   flushSize: 1
   s3BucketName: "prism-lts-local"

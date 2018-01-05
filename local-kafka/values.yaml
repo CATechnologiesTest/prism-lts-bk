@@ -1,5 +1,5 @@
 replicaCount: 1
-name: "kafka-01"
+name: "local-kafka-chart"
 nameSpace: "default"
 zookeeper:
   name: "local-zookeeper"
@@ -7,7 +7,7 @@ zookeeper:
   imageTag: "3.2.2"
 
 kafka:
-  name: "kafka-01"
+  name: "local-kafka"
   repository: "confluentinc/cp-kafka"
   imageTag: "3.2.2"
 
