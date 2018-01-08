@@ -1,15 +1,15 @@
 apiVersion: v1
 data:
-  submit-kafka-connect-s3-job: |
+  ac-user-event-kafka-connect-s3-job: |
     #!/bin/bash
     curl -i --connect-timeout 10 --fail -X POST \
        -H "Accept:application/json" \
        -H "Content-Type:application/json" \
        -d \
-    '{"name":"{{ .Values.kafkaConnectJob.name }}",
+    '{"name":"{{ .Values.acUserEventConnectJob.name }}",
      "config":
     {
-    "name":"{{ .Values.kafkaConnectJob.name }}",
+    "name":"{{ .Values.acUserEventConnectJob.name }}",
     "connector.class":"io.confluent.connect.s3.S3SinkConnector",
     "schema.generator.class":"io.confluent.connect.storage.hive.schema.TimeBasedSchemaGenerator",
     "format.class":"io.confluent.connect.s3.format.avro.AvroFormat",
@@ -18,15 +18,15 @@ data:
     "partition.duration.ms":"3000000",
     "schema.compatibility":"BACKWARD",
     "tasks.max":"1",
-    "topics":"{{ .Values.kafkaConnectJob.topics }}",
+    "topics":"{{ .Values.acUserEventConnectJob.topics }}",
     "path.format":"'"'"'year'"'"'=YYYY/'"'"'month'"'"'=MM/'"'"'day'"'"'=dd/'"'"'hour'"'"'=HH/'"'"'minute'"'"'=mm",
     "locale":"en",
     "timezone":"UTC",
-    "flush.size":"{{ .Values.kafkaConnectJob.flushSize }}",
-    "s3.bucket.name":"{{ .Values.kafkaConnectJob.s3BucketName }}"
+    "flush.size":"{{ .Values.acUserEventConnectJob.flushSize }}",
+    "s3.bucket.name":"{{ .Values.acUserEventConnectJob.s3BucketName }}"
     }}' \
-    'http://{{ .Values.kafkaConnectJob.serviceDomainName }}:8083/connectors'
+    'http://{{ .Values.acUserEventConnectJob.serviceDomainName }}:8083/connectors'
 kind: ConfigMap
 metadata:
-  name: submit-job-script
+  name: ac-user-event-job-script
   namespace: {{ .Values.namespace | quote }}
