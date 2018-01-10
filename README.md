@@ -6,7 +6,7 @@
 
 ### Initial Setup
 
-- `eval $(minikube docker-env)` to change docker contexts to minikube
+- `minikube start`
 - Setup AWS secrets, with `kubectl create secret generic aws-s3-creds --from-file ~/.aws/credentials`
 - Setup Quay credentials, go to `https://quay.io/organization/stsatlas?tab=robots`, select `stsatlas+platform_deployer` and follow the directions for Kubernetes Secret
   - Rename the secret (in the file downloaded) to be `quay-sts`
@@ -21,6 +21,13 @@ If you update the kafka chart, you will need to update and build dependencies in
 - Run `helm dep update`
 - Run `helm dep build`
 
+### Updating the Curl Docker Image (used by the kafka connect jobs)
+
+- `eval $(minikube docker-env)` to change docker contexts to minikube
+- `docker build -f DockerfileCurl -t quay.io/stsatlas/bash-curl:<your git SHA>` to build the new docker image
+- `docker push quay.io/stsatlas/bash-curl:<your git SHA>` to push the docker image
+- update `prism-lts/values.yaml`
+
 ### Running Prism-lts
 `<release_name>` is how you will refer to your installation of the helm chart in your local cluster.
 - Run `helm upgrade --install <release_name> ./prism-lts --set tags.prism-lts-local-values=true`
@@ -33,7 +40,7 @@ The `--purge` flag removes references that helm has to track your release.
 
 ### To Send Data to the REST Proxy
 - `kubectl port-forward $(kubectl get po -o name -l app=prism-lts --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082`
-- `./prism-lts/bin/post-message` to send a message into the kafka bus 
+- `./prism-lts/bin/post-message` to send a message into the kafka bus
 
 ## Must Haves to Meet Customer Requirements
 

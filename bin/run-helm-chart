@@ -12,9 +12,10 @@ check_pod_is_ready() {
 }
 
 check_job_is_done() {
-  local namespace="${1:-default}"
+  local job_name="$1"
+  local namespace="${2:-default}"
   local jsonpath="{range .items[*]}{@.status.conditions}{end}"
-  local job_conditions="$(kubectl get jobs -n "$namespace" -o jsonpath="$jsonpath")"
+  local job_conditions="$(kubectl get jobs $job_name -n "$namespace" -o jsonpath="$jsonpath")"
   echo "$job_conditions" | grep "type:Complete status:True"
 }
 
@@ -57,6 +58,9 @@ repeat_and_sleep() {
     local command_result="$($1)"
     let total_sleep+="$2"
   done
+  if [[ "$total_sleep" -ge "$max_sleep" ]]; then
+      exit 1
+  fi
 }
 
 set_quay_secret() {
@@ -96,9 +100,14 @@ main () {
   helm upgrade --install test-prism-lts . --set "kafkaConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
   repeat_and_sleep 'check_pod_is_ready prism-lts' "1"
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
-  repeat_and_sleep 'check_job_is_done' "15" "120"
+  repeat_and_sleep 'check_job_is_done lts-test-health-metrics-kc-job' "15" "120"
+  repeat_and_sleep 'check_job_is_done lts-test-ac-user-event-kc-job' "5" "60"
   post_some_data "local-kafka-rest" "default" "8082"
-  repeat_and_sleep 'check_s3' "2"
+  post_some_data "local-kafka-rest" "default" "8082"
+  post_some_data "local-kafka-rest" "default" "8082"
+  post_some_data "local-kafka-rest" "default" "8082"
+  post_some_data "local-kafka-rest" "default" "8082"
+  repeat_and_sleep 'check_s3' "2" "60"
   clean_up_s3
 }
 
