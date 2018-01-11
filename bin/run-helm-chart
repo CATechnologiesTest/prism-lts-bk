@@ -45,8 +45,7 @@ check_s3() {
 }
 
 clean_up_s3() {
-  aws s3 rm "s3://$bucket_name" --recursive
-  aws s3 rb "s3://$bucket_name"
+  aws s3 rb "s3://$bucket_name" --force
 }
 
 repeat_and_sleep() {
@@ -107,7 +106,6 @@ main () {
   post_some_data "local-kafka-rest" "default" "8082"
   post_some_data "local-kafka-rest" "default" "8082"
   repeat_and_sleep 'check_s3' "2" "30"
-  clean_up_s3
 }
 
-main "$@" || { clean_up_s3 && exit 1; }
+{ main "$@" && clean_up_s3 && exit 0; } || { clean_up_s3 && exit 1; }
