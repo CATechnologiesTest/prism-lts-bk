@@ -20,6 +20,8 @@ jobs:
       - save_cache:
           paths:
             - ~/repo
+            - ~/.helm
+            - /usr/local/bin/helm
           key: repo-{{ checksum ".circle-sha" }}
   deploy_dev:
     machine: true
