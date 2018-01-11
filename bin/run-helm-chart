@@ -106,9 +106,8 @@ main () {
   post_some_data "local-kafka-rest" "default" "8082"
   post_some_data "local-kafka-rest" "default" "8082"
   post_some_data "local-kafka-rest" "default" "8082"
-  repeat_and_sleep 'check_s3' "3" "90"
+  repeat_and_sleep 'check_s3' "2" "30"
   clean_up_s3
-  echo "last exit code: $?"
 }
 
-main "$@" || clean_up_s3 && exit 1
+main "$@" || { clean_up_s3 && exit 1; }
