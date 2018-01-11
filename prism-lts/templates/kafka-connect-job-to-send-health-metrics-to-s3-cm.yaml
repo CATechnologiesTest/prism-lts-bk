@@ -25,7 +25,7 @@ data:
     "flush.size":"{{ .Values.healthMetricsConnectJob.flushSize }}",
     "s3.bucket.name":"{{ .Values.healthMetricsConnectJob.s3BucketName }}"
     }}' \
-    http://"{{ .Values.healthMetricsConnectJob.serviceDomainName }}":8083/connectors
+    "http://{{ .Values.healthMetricsConnectJob.serviceDomainName }}:8083/connectors"
 kind: ConfigMap
 metadata:
   name: health-metrics-job-script

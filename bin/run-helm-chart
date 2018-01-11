@@ -102,12 +102,13 @@ main () {
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
   repeat_and_sleep 'check_job_is_done health-metrics-connect-s3-job' "15" "120"
   repeat_and_sleep 'check_job_is_done ac-user-event-connect-s3-job' "5" "60"
+  sleep 3
   post_some_data "local-kafka-rest" "default" "8082"
+  sleep 3
   post_some_data "local-kafka-rest" "default" "8082"
+  sleep 3
   post_some_data "local-kafka-rest" "default" "8082"
-  post_some_data "local-kafka-rest" "default" "8082"
-  post_some_data "local-kafka-rest" "default" "8082"
-  repeat_and_sleep 'check_s3' "2" "60"
+  repeat_and_sleep 'check_s3' "3" "90"
   clean_up_s3
 }
 
