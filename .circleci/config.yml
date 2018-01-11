@@ -15,14 +15,17 @@ jobs:
             - repo-{{ checksum ".circle-sha" }}
       - run:
           command: |
+            sudo chown -R $USER /usr/local/bin && sudo chgrp -R $USER /usr/local/bin
             ./bin/install-minikube-and-helm
             ./bin/run-helm-chart
+            cp -r /usr/local/bin/helm $HOME/helm
       - save_cache:
           paths:
             - ~/repo
             - ~/.helm
-            - /usr/local/bin/helm
+            - ~/helm
           key: repo-{{ checksum ".circle-sha" }}
+
   deploy_dev:
     machine: true
     working_directory: ~/repo
@@ -38,6 +41,8 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               echo "Running the dev deploy right meow!!!"
+              sudo chown -R $USER /usr/local/bin && sudo chgrp -R $USER /usr/local/bin
+              cp -r $HOME/helm /usr/local/bin/helm
               ./bin/kube-deploy dev
             fi
 
@@ -56,6 +61,8 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               echo "Running the prod deploy right meow!!!"
+              sudo chown -R $USER /usr/local/bin && sudo chgrp -R $USER /usr/local/bin
+              cp -r $HOME/helm /usr/local/bin/helm
               ./bin/kube-deploy prod
             fi
 
