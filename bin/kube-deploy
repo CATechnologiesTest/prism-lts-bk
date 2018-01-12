@@ -2,16 +2,16 @@
 
 main () {
   local environment="$1"
-  local git_sha=`git rev-parse HEAD`
   local namespace="data-processing"
   local jumpgate_user_name="deploy-data-processing"
   local service_name="prism-long-term-storage"
+  local release_name="$service_name-$environment"
   local package_loc="prism-lts-0.1.0.tgz"
-  local helm_install_cmd="helm upgrade --install $git_sha ./$package_loc --set tags.prism-lts-$environment-values=true"
+  local helm_install_cmd="helm upgrade --install --tiller-namespace $namespace --namespace $namespace $release_name ./$package_loc --set tags.prism-lts-$environment-values=true"
 
   helm package prism-lts
   scp "$package_loc" "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io:"
-  ssh "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io" "bash -exs $helm_install_cmd"
+  ssh "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io" "$helm_install_cmd"
 }
 
 main "$@"
