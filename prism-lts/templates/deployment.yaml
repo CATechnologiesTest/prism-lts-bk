@@ -28,6 +28,8 @@ spec:
         - mountPath: /root/.aws
           name: aws-s3-creds
         env:
+        - name: CI_CD_VESTION_BUMP_TEST
+          value: "TEST"
         - name: CONNECT_LOG4J_ROOT_LEVEL
           value: "DEBUG"
         - name: CONNECT_GROUP_ID
