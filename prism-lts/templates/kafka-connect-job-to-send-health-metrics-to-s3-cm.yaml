@@ -6,7 +6,7 @@ data:
   health-metrics-kafka-connect-s3-job: |
     #!/bin/bash
     connector_url="http://"{{ .Values.healthMetricsConnectJob.serviceDomainName | quote }}":8083/connectors"
-    curl "$connector_url/"{{ .Values.acUserEventConnectJob.name | quote }} | grep '"error_code":409' && exit 0
+    { curl "$connector_url/"{{ .Values.healthMetricsConnectJob.name | quote }} | grep '"error_code":409'; } && exit 0
 
     curl -i --connect-timeout 10 --fail -X POST \
        -H "Accept:application/json" \
