@@ -2,7 +2,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: health-metrics-connect-s3-job
-  namespace: {{ .Values.namespace | quote }}
   annotations:
     checksum/configMap: {{ include (print $.Template.BasePath "/kafka-connect-job-to-send-health-metrics-to-s3-cm.yaml") . | sha256sum }}
     checksum/deployment: {{ include (print $.Template.BasePath "/deployment.yaml") . | sha256sum }}

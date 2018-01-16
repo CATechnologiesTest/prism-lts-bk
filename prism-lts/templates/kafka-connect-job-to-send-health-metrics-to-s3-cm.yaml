@@ -1,4 +1,7 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: health-metrics-job-script
 data:
   health-metrics-kafka-connect-s3-job: |
     #!/bin/bash
@@ -26,7 +29,3 @@ data:
     "s3.bucket.name":"{{ .Values.healthMetricsConnectJob.s3BucketName }}"
     }}' \
     "http://{{ .Values.healthMetricsConnectJob.serviceDomainName }}:8083/connectors"
-kind: ConfigMap
-metadata:
-  name: health-metrics-job-script
-  namespace: {{ .Values.namespace | quote }}

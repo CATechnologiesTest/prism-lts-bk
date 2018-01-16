@@ -2,7 +2,6 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: {{ .Values.restProxy.name }}
-  namespace: {{ .Values.nameSpace }}
   labels:
     app: {{ .Values.restProxy.name }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}

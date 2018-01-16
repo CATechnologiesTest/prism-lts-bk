@@ -1,6 +1,5 @@
 replicaCount: 1
 name: "local-kafka-chart"
-nameSpace: "default"
 zookeeper:
   name: "local-zookeeper"
   repository: "confluentinc/cp-zookeeper"

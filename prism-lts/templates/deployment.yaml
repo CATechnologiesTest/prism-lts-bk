@@ -2,7 +2,6 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: {{ template "name" . }}
-  namespace: {{ .Values.namespace | quote }}
   annotations:
     checksum/configMapAC: {{ include (print $.Template.BasePath "/kafka-connect-job-to-send-ac-user-event-to-s3-cm.yaml") . | sha256sum }}
     checksum/configMapHM: {{ include (print $.Template.BasePath "/kafka-connect-job-to-send-health-metrics-to-s3-cm.yaml") . | sha256sum }}

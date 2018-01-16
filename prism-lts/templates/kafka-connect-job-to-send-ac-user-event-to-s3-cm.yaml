@@ -1,4 +1,7 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ac-user-event-job-script
 data:
   ac-user-event-kafka-connect-s3-job: |
     #!/bin/bash
@@ -26,7 +29,3 @@ data:
     "s3.bucket.name":"{{ .Values.acUserEventConnectJob.s3BucketName }}"
     }}' \
     "http://{{ .Values.acUserEventConnectJob.serviceDomainName }}:8083/connectors"
-kind: ConfigMap
-metadata:
-  name: ac-user-event-job-script
-  namespace: {{ .Values.namespace | quote }}
