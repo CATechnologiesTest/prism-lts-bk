@@ -15,8 +15,8 @@
 - Run `helm init`
 - Get dependencies for prism-lts by running `helm dep update prism-lts && helm dep build prism-lts` from the root of this project
 
-### Updating Kafka Chart
-If you update the kafka chart, you will need to update and build dependencies in prism-lts again.
+### Updating the `local-kafka` chart or `local-charts` [environment specific] values
+If you update any environment specific values or the local kafka chart, you will need to update and build dependencies in prism-lts again.
 
 - Run `helm dep update`
 - Run `helm dep build`
@@ -30,7 +30,8 @@ If you update the kafka chart, you will need to update and build dependencies in
 
 ### Running Prism-lts
 `<release_name>` is how you will refer to your installation of the helm chart in your local cluster.
-- Run `helm upgrade --install <release_name> ./prism-lts --set tags.prism-lts-local-values=true`
+- Your first run will use the command: `helm install --replace --name=<release name> ./prism-lts --set tags.prism-lts-local-values=true`
+- After the first run, use the command: `helm upgrade --install <release_name> ./prism-lts --set tags.prism-lts-local-values=true`
 
 ### Changing metadata labels or annotations
 If you change metadata labels or annotations, helm does not know that the previous release running in your minikube cluster is the same app.
