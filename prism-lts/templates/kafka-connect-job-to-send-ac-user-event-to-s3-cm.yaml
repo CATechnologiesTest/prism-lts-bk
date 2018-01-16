@@ -21,6 +21,8 @@ data:
     "topics":"{{ .Values.acUserEventConnectJob.topics }}",
     "path.format":"'"'"'year'"'"'=YYYY/'"'"'month'"'"'=MM/'"'"'day'"'"'=dd/'"'"'hour'"'"'=HH",
     "locale":"en",
+    "timestamp.extractor":"RecordField",
+    "timestamp.field":"metric_date",
     "timezone":"UTC",
     "flush.size":"{{ .Values.acUserEventConnectJob.flushSize }}",
     "s3.bucket.name":"{{ .Values.acUserEventConnectJob.s3BucketName }}"
