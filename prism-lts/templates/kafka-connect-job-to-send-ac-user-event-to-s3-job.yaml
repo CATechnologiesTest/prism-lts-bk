@@ -6,13 +6,16 @@ metadata:
   annotations:
     checksum/configMap: {{ include (print $.Template.BasePath "/kafka-connect-job-to-send-ac-user-event-to-s3-cm.yaml") . | sha256sum }}
     checksum/deployment: {{ include (print $.Template.BasePath "/deployment.yaml") . | sha256sum }}
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: hook-succeeded
 spec:
   template:
     metadata:
       name: ac-user-event-connect-s3-job
     spec:
       imagePullSecrets:
-      - name: {{ .Values.k8sJob.imageSecretName | quote }} 
+      - name: {{ .Values.k8sJob.imageSecretName | quote }}
       containers:
       - name: ac-user-event-connect-s3-job
         image: {{ .Values.k8sJob.image | quote }}
