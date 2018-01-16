@@ -12,8 +12,11 @@ main () {
 
   helm package prism-lts
   scp "$package_loc" "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io:"
+  set +e
   ssh "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io" "helm ls --tiller-namespace $namespace --namespace $namespace $release_name | grep DEPLOYED"
-  if [[ "$?" = "1" ]]; then
+  local ls_exit_code="$?"
+  set -e
+  if [[ "$ls_exit_code" = "1" ]]; then
     ssh "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io" "$helm_install_cmd"
   else
     ssh "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io" "$helm_upgrade_cmd"
