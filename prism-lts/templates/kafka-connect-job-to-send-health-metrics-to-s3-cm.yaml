@@ -5,6 +5,9 @@ metadata:
 data:
   health-metrics-kafka-connect-s3-job: |
     #!/bin/bash
+    local connector_url="http://{{ .Values.healthMetricsConnectJob.serviceDomainName }}:8083/connectors"
+    curl "$connector_url/{{ .Values.acUserEventConnectJob.name }}" | grep '"error_code":409' && exit 0
+
     curl -i --connect-timeout 10 --fail -X POST \
        -H "Accept:application/json" \
        -H "Content-Type:application/json" \
@@ -28,4 +31,4 @@ data:
     "flush.size":"{{ .Values.healthMetricsConnectJob.flushSize }}",
     "s3.bucket.name":"{{ .Values.healthMetricsConnectJob.s3BucketName }}"
     }}' \
-    "http://{{ .Values.healthMetricsConnectJob.serviceDomainName }}:8083/connectors"
+    "$connector_url"
