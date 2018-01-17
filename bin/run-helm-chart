@@ -108,4 +108,4 @@ main () {
   repeat_and_sleep 'check_s3' "2" "30"
 }
 
-{ main "$@" && clean_up_s3 && exit 0; } || { clean_up_s3 && exit 1; }
+# { main "$@" && clean_up_s3 && exit 0; } || { clean_up_s3 && exit 1; }
