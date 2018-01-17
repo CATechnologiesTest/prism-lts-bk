@@ -18,8 +18,10 @@ spec:
         app: {{ template "name" . }}
         release: {{ .Release.Name }}
     spec:
+      imagePullSecrets:
+      - name: {{ .Values.kafkaConnect.imageSecretName | quote }}
       containers:
-      - image: quay.io/stsatlas/schwartz-kafka-connect:9ea5066a9f2f50220a3982dd03ba23ffde86ba63
+      - image: {{ .Values.kafkaConnect.image | quote }}
         imagePullPolicy: Always
         name: prism-lts
         resources: {}
