@@ -19,7 +19,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       containers:
-      - image: confluentinc/cp-kafka-connect:3.2.2
+      - image: quay.io/stsatlas/schwartz-kafka-connect:9ea5066a9f2f50220a3982dd03ba23ffde86ba63
         imagePullPolicy: Always
         name: prism-lts
         resources: {}
