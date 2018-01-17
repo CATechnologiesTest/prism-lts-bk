@@ -40,7 +40,7 @@ The `--purge` flag removes references that helm has to track your release.
 
 
 ### To Send Data to the REST Proxy
-- `kubectl port-forward $(kubectl get po -o name -l app=prism-lts --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082`
+- `kubectl port-forward $(kubectl get po -o name -l app=local-kafka-rest --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082`
 - `./prism-lts/bin/post-message` to send a message into the kafka bus
 
 ## Must Haves to Meet Customer Requirements
