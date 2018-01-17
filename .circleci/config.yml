@@ -13,12 +13,12 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ checksum ".circle-sha" }}
-      - run:
-          command: |
-            sudo chown -R $USER /usr/local/bin && sudo chgrp -R $USER /usr/local/bin
-            ./bin/install-minikube-and-helm
-            ./bin/run-helm-chart
-            cp -r /usr/local/bin/helm $HOME/helm
+      # - run:
+      #     command: |
+      #       sudo chown -R $USER /usr/local/bin && sudo chgrp -R $USER /usr/local/bin
+      #       ./bin/install-minikube-and-helm
+      #       ./bin/run-helm-chart
+      #       cp -r /usr/local/bin/helm $HOME/helm
       - save_cache:
           paths:
             - ~/repo
@@ -70,10 +70,10 @@ workflows:
   version: 2
   build_and_deploy:
     jobs:
-      # - test
+      - test
       - deploy_dev:
-          # requires:
-          #   - test
+          requires:
+            - test
       - deploy_prod:
-          # requires:
-          #   - test
+          requires:
+            - test
