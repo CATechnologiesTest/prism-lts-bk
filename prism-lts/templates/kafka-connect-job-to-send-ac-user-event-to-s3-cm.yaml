@@ -25,7 +25,7 @@ data:
     "schema.compatibility":"BACKWARD",
     "tasks.max":"12",
     "topics":"{{ .Values.acUserEventConnectJob.topics }}",
-    "path.format":"'"'"'year'"'"'=YYYY/'"'"'month'"'"'=MM/'"'"'day'"'"'=dd/'"'"'hour'"'"'=HH",
+    "path.format":"'"'"'year'"'"'=YYYY/'"'"'month'"'"'=MM/'"'"'day'"'"'=dd",
     "locale":"en",
     "timestamp.extractor":"RecordField",
     "timestamp.field":"metric_date",

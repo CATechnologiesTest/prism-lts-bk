@@ -25,8 +25,10 @@ data:
     "schema.compatibility":"BACKWARD",
     "tasks.max":"12",
     "topics":"{{ .Values.healthMetricsConnectJob.topics }}",
-    "path.format":"'"'"'year'"'"'=YYYY/'"'"'month'"'"'=MM/'"'"'day'"'"'=dd/'"'"'hour'"'"'=HH",
+    "path.format":"'"'"'year'"'"'=YYYY/'"'"'month'"'"'=MM/'"'"'day'"'"'=dd",
     "locale":"en",
+    "timestamp.extractor":"RecordField",
+    "timestamp.field":"metric_date",
     "timezone":"UTC",
     "flush.size":"{{ .Values.healthMetricsConnectJob.flushSize }}",
     "s3.bucket.name":"{{ .Values.healthMetricsConnectJob.s3BucketName }}"
