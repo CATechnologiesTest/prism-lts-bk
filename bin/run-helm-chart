@@ -29,7 +29,8 @@ prep_s3() {
 }
 
 check_s3() {
-  aws s3 ls "s3://$bucket_name/"
+  partition="${1:-topics/ac-user-event/year=2017/month=06/day=21}"
+  aws s3 ls "s3://$bucket_name/$partition/"
 }
 
 clean_up_s3() {
