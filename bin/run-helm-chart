@@ -29,7 +29,7 @@ prep_s3() {
 }
 
 check_s3() {
-  partition="${1:-topics/ac-user-event/year=2017/month=06/day=21}"
+  partition="${1:-topics/ac-user-event/year=2018/month=01/day=04}"
   aws s3 ls "s3://$bucket_name/$partition/"
 }
 
