@@ -16,22 +16,34 @@
 - Get dependencies for prism-lts by running `helm dep update prism-lts && helm dep build prism-lts` from the root of this project
 
 ### Updating the `local-kafka` chart or `local-charts` [environment specific] values
+
 If you update any environment specific values or the local kafka chart, you will need to update and build dependencies in prism-lts again.
 
 - Run `helm dep update`
 - Run `helm dep build`
 
-### Updating the Curl Docker Image (used by the kafka connect jobs)
-
-- `eval $(minikube docker-env)` to change docker contexts to minikube
-- `docker build -f DockerfileCurl -t quay.io/stsatlas/bash-curl:<your git SHA>` to build the new docker image
-- `docker push quay.io/stsatlas/bash-curl:<your git SHA>` to push the docker image
-- update `prism-lts/values.yaml`
-
 ### Running Prism-lts
+
 `<release_name>` is how you will refer to your installation of the helm chart in your local cluster.
 - Your first run will use the command: `helm install --replace --name=<release name> ./prism-lts --set tags.prism-lts-local-values=true`
 - After the first run, use the command: `helm upgrade --install <release_name> ./prism-lts --set tags.prism-lts-local-values=true`
+
+### Updating the Kafka Connect Docker Image 
+
+- `eval $(minikube docker-env)` to change docker contexts to minikube
+- build the `sts-atlas/schwarz-kafka-connect` jar using `lein uberjar` in that repo
+- copy the jar to the `prism-long-term-storage` repo
+  - NOTE: ensure that the file is renamed to `schwartz-kafka-connect.jar`
+- `docker build . -t quay.io/stsatlas/schwartz-kafka-connect:<your git SHA> -f DockerfileSchwartzKafkaConnect` to build the docker image
+- `docker push quay.io/stsatlas/schwarz-kafka-connect:<your git SHA>` to push the docker image
+- update `prism-lts/values.yaml`
+
+### Updating the Curl Docker Image (used by the kafka connect jobs)
+
+- `eval $(minikube docker-env)` to change docker contexts to minikube
+- `docker build . -f DockerfileCurl -t quay.io/stsatlas/bash-curl:<your git SHA>` to build the new docker image
+- `docker push quay.io/stsatlas/bash-curl:<your git SHA>` to push the docker image
+- update `prism-lts/values.yaml`
 
 ### Changing metadata labels or annotations
 If you change metadata labels or annotations, helm does not know that the previous release running in your minikube cluster is the same app.
