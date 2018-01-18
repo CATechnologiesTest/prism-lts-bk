@@ -11,6 +11,11 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 3
   replicas: {{ .Values.kafkaConnect.replicaCount }}
   template:
     metadata:
@@ -18,6 +23,7 @@ spec:
         app: {{ template "name" . }}
         release: {{ .Release.Name }}
     spec:
+      restartPolicy: {{ .Values.kafkaConnect.restartPolicy | quote }}
       containers:
       - image: confluentinc/cp-kafka-connect:3.2.2
         imagePullPolicy: Always
@@ -27,8 +33,6 @@ spec:
         - mountPath: /root/.aws
           name: aws-s3-creds
         env:
-        - name: CI_CD_VESTION_BUMP_TEST
-          value: "TEST"
         - name: CONNECT_LOG4J_ROOT_LEVEL
           value: "DEBUG"
         - name: CONNECT_GROUP_ID
@@ -59,19 +63,27 @@ spec:
           value: {{ .Values.kafkaConnect.connectValueConverterSchemaRegistryUrl | quote }}
         - name: CONNECT_REST_ADVERTISED_HOST_NAME
           value: {{ template "name" . }}
+        - name: REST_ADVERTISED_HOST_NAME
+          value: {{ template "name" . }}
         ports:
         - containerPort: 8083
           protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 8083
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
 #        command: ["/bin/sh"]
 #        args: ["-c", "while true; do sleep 10; done"]
       dnsPolicy: ClusterFirst
-      restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
-
       dnsPolicy: ClusterFirst
-      restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
