@@ -93,7 +93,7 @@ post_some_data() {
 
 send_a_bunch_of_data() {
   local app_name="$1"
-  local max_count="${2:-6}"
+  local max_count="${2:-4}"
   count=0
   until [[ "$count" -ge "$max_count" ]]; do
     post_some_data "local-kafka-rest" "default" "8082"
