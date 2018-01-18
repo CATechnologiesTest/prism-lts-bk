@@ -1,7 +1,7 @@
 kafkaConnect:
   replicaCount: 1
   imageSecretName: "quay-sts"
-  image: "quay.io/stsatlas/schwartz-kafka-connect:9ea5066a9f2f50220a3982dd03ba23ffde86ba63"
+  image: "quay.io/stsatlas/schwartz-kafka-connect:35ef64c500ec62bce9859f33fe49c38a40299c20"
   connectInternalKeyConverter: "org.apache.kafka.connect.json.JsonConverter"
   connectInternalValueConverter: "org.apache.kafka.connect.json.JsonConverter"
   connectKeyConverter: "io.confluent.connect.avro.AvroConverter"
