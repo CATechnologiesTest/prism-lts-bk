@@ -24,8 +24,10 @@ spec:
         release: {{ .Release.Name }}
     spec:
       restartPolicy: {{ .Values.kafkaConnect.restartPolicy | quote }}
+      imagePullSecrets:
+      - name: {{ .Values.kafkaConnect.imageSecretName | quote }}
       containers:
-      - image: confluentinc/cp-kafka-connect:3.2.2
+      - image: {{ .Values.kafkaConnect.image | quote }}
         imagePullPolicy: Always
         name: prism-lts
         resources: {}

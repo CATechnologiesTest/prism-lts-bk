@@ -1,5 +1,7 @@
 kafkaConnect:
   replicaCount: 1
+  imageSecretName: "quay-sts"
+  image: "quay.io/stsatlas/schwartz-kafka-connect:35ef64c500ec62bce9859f33fe49c38a40299c20"
   connectInternalKeyConverter: "org.apache.kafka.connect.json.JsonConverter"
   connectInternalValueConverter: "org.apache.kafka.connect.json.JsonConverter"
   connectKeyConverter: "io.confluent.connect.avro.AvroConverter"
@@ -13,14 +15,14 @@ healthMetricsConnectJob:
   name: "lts-test-health-metrics-kc-job"
   topics: "health-metrics"
   timestampExtractor: "Record"
-  flushSize: 1
+  flushSize: 250
   s3BucketName: "prism-lts-local"
 
 acUserEventConnectJob:
   name: "lts-test-ac-user-event-kc-job"
   topics: "ac-user-event"
   timestampExtractor: "Record"
-  flushSize: 1
+  flushSize: 250
   s3BucketName: "prism-lts-local"
 
 tags:
