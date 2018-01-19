@@ -24,11 +24,8 @@ spec:
         release: {{ .Release.Name }}
     spec:
       restartPolicy: {{ .Values.kafkaConnect.restartPolicy | quote }}
-<<<<<<< HEAD
-=======
       imagePullSecrets:
       - name: {{ .Values.kafkaConnect.imageSecretName | quote }}
->>>>>>> ff979046ea1605832fa4c56f74f19f8dbba486f6
       containers:
       - image: {{ .Values.kafkaConnect.image | quote }}
         imagePullPolicy: Always
