@@ -4,6 +4,7 @@ exports:
       kafkaServers: "local-kafka:9092"
       connectKeyConverterSchemaRegistryUrl: "http://local-schema-registry:8081"
       connectValueConverterSchemaRegistryUrl: "http://local-schema-registry:8081"
+      restartPolicy: "Always"
     healthMetricsConnectJob:
       name: "lts-local-health-metrics-kc-job"
       s3BucketName: "local-prism-lts"

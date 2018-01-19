@@ -1,26 +1,106 @@
 #!/bin/bash -ex
 
-main () {
-  local environment="$1"
-  local namespace="data-processing"
-  local jumpgate_user_name="deploy-data-processing"
-  local service_name="prism-long-term-storage"
-  local release_name="$service_name-$environment"
-  local package_loc="prism-lts-0.1.0.tgz"
-  local helm_install_cmd="helm install --timeout 600 --replace --tiller-namespace $namespace --namespace $namespace --name $release_name ./$package_loc --set tags.prism-lts-$environment-values=true"
-  local helm_upgrade_cmd="helm upgrade --install --timeout 600 --tiller-namespace $namespace --namespace $namespace $release_name ./$package_loc --set tags.prism-lts-$environment-values=true"
+environment="$1"
+namespace="data-processing"
+jumpgate_user_name="deploy-data-processing"
+helm_cmd_tiller_option="--tiller-namespace $namespace"
+helm_cmd_options="$helm_cmd_tiller_option --namespace $namespace"
+helm_set_vars="--set tags.prism-lts-$environment-values=true"
 
-  helm package prism-lts
-  scp "$package_loc" "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io:"
-  set +e
-  ssh "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io" "helm ls --tiller-namespace $namespace --namespace $namespace $release_name | grep DEPLOYED"
-  local ls_exit_code="$?"
-  set -e
-  if [[ "$ls_exit_code" = "1" ]]; then
-    ssh "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io" "$helm_install_cmd"
-  else
-    ssh "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io" "$helm_upgrade_cmd"
-  fi
+copy_to_jumpgate() {
+    scp "$1" "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io:"
 }
 
-main "$@"
+jumpgate_exec() {
+    ssh "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io" "$1"
+}
+
+local_helm_package() {
+    helm dep update "$1"
+    helm dep build "$1"
+    helm package "$1"
+}
+
+jumpgate_helm_install() {
+    local release_name="$1"
+    local package_loc="$2"
+    local options="$3"
+    local cmd="helm install --wait --timeout 120 --name $release_name ./$package_loc $helm_cmd_options $helm_set_vars $options"
+
+    jumpgate_exec "$cmd"
+}
+
+jumpgate_helm_upgrade() {
+    local release_name="$1"
+    local package_loc="$2"
+    local options="$3"
+    local cmd="helm upgrade --wait --timeout 120 $release_name ./$package_loc $helm_cmd_options $helm_set_vars $options"
+
+    jumpgate_exec "$cmd"
+}
+
+jumpgate_helm_delete() {
+    local release_name="$1"
+    local options="$2"
+    local cmd="helm delete $release_name --purge $helm_cmd_tiller_option $options"
+
+    jumpgate_exec "$cmd"
+}
+
+jumpgate_helm_rollback() {
+    local release_name="$1"
+    local options="$2"
+    local cmd="helm rollback $release_name 0 $helm_cmd_tiller_option $options"
+
+    jumpgate_exec "$cmd"
+}
+
+get_current_status() {
+    local release_name="$1"
+    local awk_print='{print $4}'
+    local cmd="helm ls --tiller-namespace data-processing -a --max 1 --date --reverse | awk -F '\t' '$awk_print' | tail -n 1"
+    jumpgate_exec "$cmd"
+}
+
+
+try() {
+    set +e
+    "$@"
+    set -e
+}
+
+main () {
+  local service_name="prism-long-term-storage"
+  local release_name="$service_name-$environment"
+  local chart_loc="prism-lts"
+  local package_loc="prism-lts-0.1.0.tgz"
+
+  local_helm_package "$chart_loc"
+  copy_to_jumpgate "$package_loc"
+
+  # Try to Deploy
+  local current_state=$(get_current_status "$release_name")
+  case "$current_state" in
+      "DEPLOYED")
+          # The previous deploy was successful
+          # We are good to upgrade
+          jumpgate_helm_upgrade "$release_name" "$package_loc"
+          ;;
+      "FAILED")
+          # The previous deploy failed
+          # We have rolling updates enabled so the previous pod is still online
+          # Lets rollback so we can upgrade
+          jumpgate_helm_rollback "$release_name"
+          jumpgate_helm_upgrade "$release_name" "$package_loc"
+          ;;
+      *)
+          # Not Installed/Bad State
+          # We are trusting that the tests passed so its good to go
+          try jumpgate_helm_delete "$release_name"
+          jumpgate_helm_install "$release_name" "$package_loc"
+          ;;
+  esac
+
+}
+
+main
