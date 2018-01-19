@@ -40,6 +40,11 @@ If you update any environment specific values or the local kafka chart, you will
 - Your first run will use the command: `helm install --replace --name=<release name> ./prism-lts --set tags.prism-lts-local-values=true`
 - After the first run, use the command: `helm upgrade --install <release_name> ./prism-lts --set tags.prism-lts-local-values=true`
 
+### To Send Data to the REST Proxy
+- setup port forwarding for the local kafka rest proxy: `kubectl port-forward $(kubectl get po -o name -l app=local-kafka-rest --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082`
+- view the logs with: `kubectl logs $(kubectl get po -o name -l app=prism-lts --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1)`
+- finally, run: `./prism-lts/bin/post-messages <desired num messages>` to send a bunch of messages onto the local kafka bus
+
 ### Updating the Kafka Connect Docker Image
 
 - `eval $(minikube docker-env)` to change docker contexts to minikube
@@ -62,8 +67,3 @@ If you update any environment specific values or the local kafka chart, you will
 If you change metadata labels or annotations, helm does not know that the previous release running in your minikube cluster is the same app.
 Delete your old release by running `helm delete <release_name> --purge`
 The `--purge` flag removes references that helm has to track your release.
-
-
-### To Send Data to the REST Proxy
-- `kubectl port-forward $(kubectl get po -o name -l app=local-kafka-rest --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082`
-- `./prism-lts/bin/post-messages <desired num messages>` to send a message into the kafka bus
