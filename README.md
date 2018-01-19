@@ -2,6 +2,18 @@
 
 ![From One Conveyor To Another](move-the-data.gif)
 
+[![CircleCI](https://circleci.com/gh/sts-atlas/prism-long-term-storage.svg?style=svg&circle-token=f9068ced4bb8830298187da1386879751e15da78)](https://circleci.com/gh/sts-atlas/prism-long-term-storage)
+
+Prism long term storage is meant to propagate data from our customers through the Prism architecture into a storage area for an infinite period of time.
+
+## How does `prism-long-term-storage` work?
+
+Prism long term storage uses the AWS S3 connector for Kafka Connect to route data from our Kafka cluster into AWS S3. Customer data is ingested by a Kafka Producer and Kafka Connect functions as a Kafka Consumer.
+
+### Partitioning
+
+We are using a custom partition scheme forked from the Hellfish's team `RallySoftware/schwartz-kafka-connect` repo. This uses the `metric_date` field in each incoming Avro message to route these messages to a particular S3 bucket and file. Each S3 file contains a `flushSize` number of Avro records for that particular day. For instance, with a `metric_date` of `2018-01-04`, each record will be routed to a file in the bucket: `s3://prism-lts/topics/ac-user-event/year=2018/month=01/day=04/`. The flush size can be any number that is reasonable. We are starting with a flush size of 250 as a default value. This can be updated in `prism-lts/values.yaml`.
+
 ## Local Development
 
 ### Initial Setup
@@ -28,14 +40,15 @@ If you update any environment specific values or the local kafka chart, you will
 - Your first run will use the command: `helm install --replace --name=<release name> ./prism-lts --set tags.prism-lts-local-values=true`
 - After the first run, use the command: `helm upgrade --install <release_name> ./prism-lts --set tags.prism-lts-local-values=true`
 
-### Updating the Kafka Connect Docker Image 
+### Updating the Kafka Connect Docker Image
 
 - `eval $(minikube docker-env)` to change docker contexts to minikube
-- build the `sts-atlas/schwarz-kafka-connect` jar using `lein uberjar` in that repo
-- copy the jar to the `prism-long-term-storage` repo
-  - NOTE: ensure that the file is renamed to `schwartz-kafka-connect.jar`
-- `docker build . -t quay.io/stsatlas/schwartz-kafka-connect:<your git SHA> -f DockerfileSchwartzKafkaConnect` to build the docker image
-- `docker push quay.io/stsatlas/schwarz-kafka-connect:<your git SHA>` to push the docker image
+- go to the [sts-atlas/schwartz-kafka-connect](https://github.com/sts-atlas/schwartz-kafka-connect) repo.
+- build the `sts-atlas/schwarz-kafka-connect` jar using `lein uberjar` in that repo.
+- copy the jar to the `prism-long-term-storage` repo.
+  - NOTE: ensure that the file is renamed to `schwartz-kafka-connect.jar`.
+- run `docker build . -t quay.io/stsatlas/schwartz-kafka-connect:<your git SHA> -f DockerfileSchwartzKafkaConnect` to build the docker image
+- use `docker push quay.io/stsatlas/schwarz-kafka-connect:<your git SHA>` to push the docker image
 - update `prism-lts/values.yaml`
 
 ### Updating the Curl Docker Image (used by the kafka connect jobs)
@@ -52,17 +65,5 @@ The `--purge` flag removes references that helm has to track your release.
 
 
 ### To Send Data to the REST Proxy
-- `kubectl port-forward $(kubectl get po -o name -l app=prism-lts --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082`
-- `./prism-lts/bin/post-message` to send a message into the kafka bus
-
-## Must Haves to Meet Customer Requirements
-
-- [ ] Fix `health-metrics`  schema issues in dev
-- [ ] Deploy in Production
-
-## Must haves to be a "Real" Production Service
-
-- [ ] Automate recovery of Connect Jobs (turn k8s job into k8s cron job?)
-- [ ] Monitoring of Kafka Connect Jobs
-- [ ] Alerting on N failed jobs
-- [ ] Circle CI
+- `kubectl port-forward $(kubectl get po -o name -l app=local-kafka-rest --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082`
+- `./prism-lts/bin/post-messages <desired num messages>` to send a message into the kafka bus
