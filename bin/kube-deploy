@@ -12,7 +12,7 @@ copy_to_jumpgate() {
 }
 
 jumpgate_exec() {
-    ssh "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io" "$1"
+    ssh -o ServerAliveInterval=30 "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io" "$1"
 }
 
 local_helm_package() {
@@ -25,7 +25,7 @@ jumpgate_helm_install() {
     local release_name="$1"
     local package_loc="$2"
     local options="$3"
-    local cmd="helm install --wait --timeout 120 --name $release_name ./$package_loc $helm_cmd_options $helm_set_vars $options"
+    local cmd="helm install --wait --timeout 150 --name $release_name ./$package_loc $helm_cmd_options $helm_set_vars $options"
 
     jumpgate_exec "$cmd"
 }
@@ -34,7 +34,7 @@ jumpgate_helm_upgrade() {
     local release_name="$1"
     local package_loc="$2"
     local options="$3"
-    local cmd="helm upgrade --wait --timeout 120 $release_name ./$package_loc $helm_cmd_options $helm_set_vars $options"
+    local cmd="helm upgrade --wait --timeout 150 $release_name ./$package_loc $helm_cmd_options $helm_set_vars $options"
 
     jumpgate_exec "$cmd"
 }
