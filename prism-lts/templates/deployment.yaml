@@ -86,5 +86,5 @@ spec:
       volumes:
       - secret:
           defaultMode: 420
-          secretName: aws-s3-creds
+          secretName: {{ .Values.kafkaConnect.s3SecretName | quote }}
         name: aws-s3-creds
