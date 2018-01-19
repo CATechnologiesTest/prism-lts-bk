@@ -39,7 +39,7 @@ spec:
           name: aws-s3-creds
         env:
         - name: CONNECT_LOG4J_ROOT_LEVEL
-          value: "DEBUG"
+          value: "INFO"
         - name: CONNECT_GROUP_ID
           value: "s3-worker-group"
         - name: CONNECT_OFFSET_STORAGE_TOPIC
@@ -67,8 +67,6 @@ spec:
         - name: CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
           value: {{ .Values.kafkaConnect.connectValueConverterSchemaRegistryUrl | quote }}
         - name: CONNECT_REST_ADVERTISED_HOST_NAME
-          value: {{ template "name" . }}
-        - name: REST_ADVERTISED_HOST_NAME
           value: {{ template "name" . }}
         ports:
         - containerPort: 8083
