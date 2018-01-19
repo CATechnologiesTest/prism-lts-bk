@@ -18,8 +18,10 @@ spec:
         app: {{ template "name" . }}
         release: {{ .Release.Name }}
     spec:
+      imagePullSecrets:
+      - name: {{ .Values.kafkaConnect.imageSecretName | quote }}
       containers:
-      - image: confluentinc/cp-kafka-connect:3.2.2
+      - image: {{ .Values.kafkaConnect.image | quote }}
         imagePullPolicy: Always
         name: prism-lts
         resources: {}
