@@ -1,5 +1,0 @@
-#!/bin/bash -e
-curl -vX POST -H "Content-Type: application/vnd.kafka.avro.v2+json" \
-    -H "Accept: application/vnd.kafka.v2+json" \
-    --url "http://localhost:8082/topics/health-metrics" \
-    --data '{"value_schema":"{\"type\":\"record\",\"name\":\"HealthMetric\", \"namespace\": \"com.sts\", \"fields\":[{\"name\":\"user_id\",\"type\":\"string\"},{\"name\":\"health\",\"type\":\"double\"}]}","records":[{"value":{"health":1.5,"user_id":"receu01"}}]}'

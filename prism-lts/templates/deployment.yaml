@@ -24,8 +24,13 @@ spec:
         release: {{ .Release.Name }}
     spec:
       restartPolicy: {{ .Values.kafkaConnect.restartPolicy | quote }}
+<<<<<<< HEAD
+=======
+      imagePullSecrets:
+      - name: {{ .Values.kafkaConnect.imageSecretName | quote }}
+>>>>>>> ff979046ea1605832fa4c56f74f19f8dbba486f6
       containers:
-      - image: confluentinc/cp-kafka-connect:3.2.2
+      - image: {{ .Values.kafkaConnect.image | quote }}
         imagePullPolicy: Always
         name: prism-lts
         resources: {}
@@ -79,10 +84,6 @@ spec:
           timeoutSeconds: 1
 #        command: ["/bin/sh"]
 #        args: ["-c", "while true; do sleep 10; done"]
-      dnsPolicy: ClusterFirst
-      schedulerName: default-scheduler
-      securityContext: {}
-      terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
       schedulerName: default-scheduler
       securityContext: {}
