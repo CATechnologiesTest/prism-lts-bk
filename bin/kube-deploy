@@ -95,7 +95,7 @@ main () {
           ;;
       *)
           # Not Installed/Bad State
-          # We are trusting that the tests pasted so its good to go
+          # We are trusting that the tests passed so its good to go
           try jumpgate_helm_delete "$release_name"
           jumpgate_helm_install "$release_name" "$package_loc"
           ;;
