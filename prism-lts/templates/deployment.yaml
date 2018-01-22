@@ -19,6 +19,9 @@ spec:
   replicas: {{ .Values.kafkaConnect.replicaCount }}
   template:
     metadata:
+      annotations:
+        app: prims-lts
+        prometheus.io/scrape: "true"
       labels:
         app: {{ template "name" . }}
         release: {{ .Release.Name }}
@@ -27,6 +30,19 @@ spec:
       imagePullSecrets:
       - name: {{ .Values.kafkaConnect.imageSecretName | quote }}
       containers:
+      - image: yagni/docker-jmx-exporter
+        imagePullPolicy: Always
+        name: jmx-exporter
+        ports:
+        - containerPort: 9138
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /jmx_prometheus
+          name: jmx-config-file
+          readOnly: true
       - image: {{ .Values.kafkaConnect.image | quote }}
         imagePullPolicy: Always
         name: prism-lts
@@ -35,6 +51,8 @@ spec:
         - mountPath: /root/.aws
           name: aws-s3-creds
         env:
+        - name: EXTRA_ARGS
+          value: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=1234 -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false"
         - name: CONNECT_LOG4J_ROOT_LEVEL
           value: "INFO"
         - name: CONNECT_GROUP_ID
@@ -84,6 +102,10 @@ spec:
       securityContext: {}
       terminationGracePeriodSeconds: 30
       volumes:
+      - configMap:
+          defaultMode: 420
+          name: {{ template "fullname" . }}-jmx-config
+        name: jmx-config-file
       - secret:
           defaultMode: 420
           secretName: {{ .Values.kafkaConnect.s3SecretName | quote }}
