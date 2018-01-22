@@ -104,7 +104,7 @@ spec:
       volumes:
       - configMap:
           defaultMode: 420
-          name: jmx-config-file
+          name: {{ template "fullname" . }}-jmx-config
         name: jmx-config-file
       - secret:
           defaultMode: 420
