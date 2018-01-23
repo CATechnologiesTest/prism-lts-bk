@@ -7,11 +7,11 @@ exports:
       s3SecretName: "prism-lts-s3-access"
       restartPolicy: "Always"
     healthMetricsConnectJob:
-      name: "lts-dev-health-metrics-kc-job"
+      name: "lts-dev-health-metrics-kc-job-v2"
       s3BucketName: "dev-prism-lts"
       serviceDomainName: "prism-lts.data-processing.svc.k8s"
     acUserEventConnectJob:
-      name: "lts-dev-ac-user-event-kc-job"
+      name: "lts-dev-ac-user-event-kc-job-v2"
       s3BucketName: "dev-prism-lts"
       serviceDomainName: "prism-lts.data-processing.svc.k8s"
     namespace: "data-processing"
