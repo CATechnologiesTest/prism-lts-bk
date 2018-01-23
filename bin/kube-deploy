@@ -58,7 +58,7 @@ jumpgate_helm_rollback() {
 get_current_status() {
     local release_name="$1"
     local awk_print='{print $4}'
-    local cmd="helm ls --tiller-namespace data-processing -a --max 1 --date --reverse | awk -F '\t' '$awk_print' | tail -n 1"
+    local cmd="helm ls $release_name --tiller-namespace data-processing -a --max 1 --date --reverse | awk -F '\t' '$awk_print' | tail -n 1"
     jumpgate_exec "$cmd"
 }
 
