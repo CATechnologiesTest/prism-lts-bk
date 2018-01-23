@@ -49,9 +49,6 @@ spec:
         resources:
           requests:
             memory: "512Mi"
-          limits:
-            memory: "4Gi"
-        resources: {}
         volumeMounts:
         - mountPath: /root/.aws
           name: aws-s3-creds
@@ -80,8 +77,6 @@ spec:
           value: {{ .Values.kafkaConnect.connectValueConverter | quote }}
         - name: CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE
           value: "false"
-        - name: KAFKA_HEAP_OPTS
-          value: "-Xms512m -Xmx4g"
         - name: CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE
           value: "false"
         - name: CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL
