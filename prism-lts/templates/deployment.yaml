@@ -46,6 +46,11 @@ spec:
       - image: {{ .Values.kafkaConnect.image | quote }}
         imagePullPolicy: Always
         name: prism-lts
+        resources:
+          requests:
+            memory: "512Mi"
+          limits:
+            memory: "4Gi"
         resources: {}
         volumeMounts:
         - mountPath: /root/.aws
@@ -76,7 +81,7 @@ spec:
         - name: CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE
           value: "false"
         - name: KAFKA_HEAP_OPTS
-          value: "-Xms512m -Xmx12g"
+          value: "-Xms512m -Xmx4g"
         - name: CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE
           value: "false"
         - name: CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL
