@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 
-bucket_name="test-connect-$(uuidgen)"
+bucket_name="test-connect-$(uuidgen | tr \"[:upper:]\" \"[:lower:]\")"
 
 check_pod_is_ready() {
   local app_name="$1"
