@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 
-bucket_name="test-connect-$(uuidgen)"
+bucket_name="test-connect-$(uuidgen | tr \"[:upper:]\" \"[:lower:]\")"
 
 check_pod_is_ready() {
   local app_name="$1"
@@ -47,7 +47,7 @@ repeat_and_sleep() {
     let total_sleep+="$2"
   done
   if [[ "$total_sleep" -ge "$max_sleep" ]]; then
-      return 1
+      exit 1
   fi
 }
 
