@@ -47,7 +47,7 @@ repeat_and_sleep() {
     let total_sleep+="$2"
   done
   if [[ "$total_sleep" -ge "$max_sleep" ]]; then
-      return 1
+      exit 1
   fi
 }
 
