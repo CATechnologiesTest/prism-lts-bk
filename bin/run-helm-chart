@@ -11,11 +11,11 @@ check_pod_is_ready() {
   echo "$pod_conditions" | grep "Ready=True"
 }
 
-check_job_is_done() {
+check_jobs_are_done() {
   local job_name="$1"
   local namespace="${2:-default}"
-  local jsonpath="{@.status.conditions}"
-  local job_conditions="$(kubectl get jobs $job_name -n "$namespace" -o jsonpath="$jsonpath")"
+  local jsonpath="{range @.items[*]}{@.status}{end}"
+  local job_conditions="$(kubectl get jobs -n "$namespace" -o jsonpath="$jsonpath")"
   echo "$job_conditions" | grep "type:Complete status:True"
 }
 
@@ -111,8 +111,7 @@ main () {
   helm upgrade --install test-prism-lts . --set "acUserEventConnectJob.flushSize=2" --set "healthMetricsConnectJob.flushSize=2" --set "acUserEventConnectJob.s3BucketName=$bucket_name" --set "healthMetricsConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
   repeat_and_sleep 'check_pod_is_ready prism-lts' "1"
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
-  repeat_and_sleep 'check_job_is_done health-metrics-connect-s3-job' "15" "120"
-  repeat_and_sleep 'check_job_is_done ac-user-event-connect-s3-job' "5" "60"
+  repeat_and_sleep 'check_jobs_are_done' "15" "120"
   send_a_bunch_of_data
   repeat_and_sleep 'check_s3' "2" "30"
 }
