@@ -5,16 +5,15 @@ metadata:
 data:
   health-metrics-kafka-connect-s3-job: |
     #!/bin/bash
-    connector_url="http://"{{ .Values.healthMetricsConnectJob.serviceDomainName | quote }}":8083/connectors"
-    { curl -i "$connector_url/"{{ .Values.healthMetricsConnectJob.name | quote }} | grep '200 OK'; } && exit 0
+    domain_name={{ .Values.healthMetricsConnectJob.serviceDomainName | quote }}
+    connect_job_name={{ .Values.healthMetricsConnectJob.name | quote }}
+    connector_url="http://$domain_name:8083/connectors/$connect_job_name/config"
 
-    curl -i --connect-timeout 10 --fail -X POST \
+    curl -i --connect-timeout 10 --fail -X PUT \
        -H "Accept:application/json" \
        -H "Content-Type:application/json" \
        -d \
-    '{"name":"{{ .Values.healthMetricsConnectJob.name }}",
-     "config":
-    {
+    '{
     "name":"{{ .Values.healthMetricsConnectJob.name }}",
     "connector.class":"io.confluent.connect.s3.S3SinkConnector",
     "schema.generator.class":"io.confluent.connect.storage.hive.schema.TimeBasedSchemaGenerator",
@@ -32,5 +31,5 @@ data:
     "timezone":"UTC",
     "flush.size":"{{ .Values.healthMetricsConnectJob.flushSize }}",
     "s3.bucket.name":"{{ .Values.healthMetricsConnectJob.s3BucketName }}"
-    }}' \
+    }' \
     "$connector_url"

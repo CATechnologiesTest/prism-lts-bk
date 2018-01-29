@@ -5,16 +5,15 @@ metadata:
 data:
   ac-user-event-kafka-connect-s3-job: |
     #!/bin/bash
-    connector_url="http://"{{ .Values.acUserEventConnectJob.serviceDomainName | quote }}":8083/connectors"
-    { curl -i "$connector_url/"{{ .Values.acUserEventConnectJob.name | quote }} | grep '200 OK'; } && exit 0
+    domain_name={{ .Values.acUserEventConnectJob.serviceDomainName | quote }}
+    connect_job_name={{ .Values.acUserEventConnectJob.name | quote }}
+    connector_url="http://$domain_name:8083/connectors/$connect_job_name/config"
 
-    curl -i --connect-timeout 10 --fail -X POST \
+    curl -i --connect-timeout 10 --fail -X PUT \
        -H "Accept:application/json" \
        -H "Content-Type:application/json" \
        -d \
-    '{"name":"{{ .Values.acUserEventConnectJob.name }}",
-     "config":
-    {
+    '{
     "name":"{{ .Values.acUserEventConnectJob.name }}",
     "connector.class":"io.confluent.connect.s3.S3SinkConnector",
     "schema.generator.class":"io.confluent.connect.storage.hive.schema.TimeBasedSchemaGenerator",
@@ -32,5 +31,5 @@ data:
     "timezone":"UTC",
     "flush.size":"{{ .Values.acUserEventConnectJob.flushSize }}",
     "s3.bucket.name":"{{ .Values.acUserEventConnectJob.s3BucketName }}"
-    }}' \
+    }' \
     "$connector_url"

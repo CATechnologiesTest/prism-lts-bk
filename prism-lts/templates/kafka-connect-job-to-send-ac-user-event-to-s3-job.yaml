@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "ac-user-event-connect-s3-job-{{ now | htmlDate | sha256sum | trunc 6 }}"
+  name: "ac-user-event-connect-s3-job-{{ now | quote | sha256sum | trunc 6 }}"
   annotations:
     checksum/configMap: {{ include (print $.Template.BasePath "/kafka-connect-job-to-send-ac-user-event-to-s3-cm.yaml") . | sha256sum }}
     checksum/deployment: {{ include (print $.Template.BasePath "/deployment.yaml") . | sha256sum }}
