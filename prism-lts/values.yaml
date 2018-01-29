@@ -15,14 +15,14 @@ healthMetricsConnectJob:
   name: "lts-test-health-metrics-kc-job"
   topics: "health-metrics"
   timestampExtractor: "Record"
-  flushSize: 250
+  flushSize: 2
   s3BucketName: "prism-lts-local"
 
 acUserEventConnectJob:
   name: "lts-test-ac-user-event-kc-job"
   topics: "ac-user-event"
   timestampExtractor: "Record"
-  flushSize: 250
+  flushSize: 2
   s3BucketName: "prism-lts-local"
 
 tags:

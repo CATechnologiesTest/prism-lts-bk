@@ -9,9 +9,11 @@ exports:
     healthMetricsConnectJob:
       name: "lts-local-health-metrics-kc-job"
       s3BucketName: "local-prism-lts"
+      flushSize: 2
       serviceDomainName: "prism-lts"
     acUserEventConnectJob:
       name: "lts-local-ac-user-event-kc-job"
       s3BucketName: "local-prism-lts"
+      flushSize: 2
       serviceDomainName: "prism-lts"
     namespace: "default"
