@@ -111,8 +111,8 @@ main () {
   helm upgrade --install test-prism-lts . --set "acUserEventConnectJob.flushSize=2" --set "healthMetricsConnectJob.flushSize=2" --set "acUserEventConnectJob.s3BucketName=$bucket_name" --set "healthMetricsConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
   repeat_and_sleep 'check_pod_is_ready prism-lts' "1"
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
-  repeat_and_sleep 'check_job_is_done health-metrics-connect-s3-job-v2' "15" "120"
-  repeat_and_sleep 'check_job_is_done ac-user-event-connect-s3-job-v2' "5" "60"
+  repeat_and_sleep 'check_job_is_done health-metrics-connect-s3-job' "15" "120"
+  repeat_and_sleep 'check_job_is_done ac-user-event-connect-s3-job' "5" "60"
   send_a_bunch_of_data
   repeat_and_sleep 'check_s3' "2" "30"
 }
