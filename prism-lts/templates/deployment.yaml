@@ -48,11 +48,13 @@ spec:
         name: prism-lts
         resources:
           requests:
-            memory: "512Mi"
+            memory: {{ Values.kafkaConnect.memoryRequest | quote }}
         volumeMounts:
         - mountPath: /root/.aws
           name: aws-s3-creds
         env:
+        - name: KAFKA_HEAP_OPTS
+          value: {{ Values.kafkaConnect.heapOpts | quote }}
         - name: EXTRA_ARGS
           value: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=1234 -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false"
         - name: CONNECT_LOG4J_ROOT_LEVEL
