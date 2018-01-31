@@ -1,6 +1,8 @@
 exports:
   environment-specific-data:
     kafkaConnect:
+      memoryRequest: "128Mi"
+      heapOpts: "-Xms64m -Xmx128m"
       kafkaServers: "local-kafka:9092"
       connectKeyConverterSchemaRegistryUrl: "http://local-schema-registry:8081"
       connectValueConverterSchemaRegistryUrl: "http://local-schema-registry:8081"
