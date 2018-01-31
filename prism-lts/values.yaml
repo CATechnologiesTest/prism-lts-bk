@@ -18,6 +18,7 @@ healthMetricsConnectJob:
   topics: "health-metrics"
   timestampExtractor: "Record"
   flushSize: 2
+  rotateInterval: 15000
   s3BucketName: "local-prism-lts"
 
 acUserEventConnectJob:
@@ -25,6 +26,7 @@ acUserEventConnectJob:
   topics: "ac-user-event"
   timestampExtractor: "Record"
   flushSize: 2
+  rotateInterval: 15000
   s3BucketName: "local-prism-lts"
 
 tags:

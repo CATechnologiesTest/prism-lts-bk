@@ -12,10 +12,12 @@ exports:
       name: "lts-dev-health-metrics-kc-job"
       s3BucketName: "dev-prism-lts"
       flushSize: 250
+      rotateInterval: 15000
       serviceDomainName: "prism-lts.data-processing.svc.k8s"
     acUserEventConnectJob:
       name: "lts-dev-ac-user-event-kc-job"
       s3BucketName: "dev-prism-lts"
       flushSize: 250
+      rotateInterval: 15000
       serviceDomainName: "prism-lts.data-processing.svc.k8s"
     namespace: "data-processing"
