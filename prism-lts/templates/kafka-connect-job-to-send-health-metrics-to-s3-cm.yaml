@@ -26,7 +26,7 @@ data:
     "topics":"{{ .Values.healthMetricsConnectJob.topics }}",
     "path.format":"'"'"'year'"'"'=YYYY/'"'"'month'"'"'=MM/'"'"'day'"'"'=dd",
     "locale":"us",
-    "rotate.interval.ms":"{{ .Values.healthMetricsConnectJob.rotateInterval }}",
+    "rotate.schedule.interval.ms":"{{ .Values.healthMetricsConnectJob.rotateInterval }}",
     "timestamp.extractor":"schwartz_kafka_connect.SchwartzTimestampExtractor",
     "timestamp.field":"metric_date",
     "timezone":"UTC",
