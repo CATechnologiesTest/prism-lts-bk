@@ -26,6 +26,7 @@ data:
     "topics":"{{ .Values.acUserEventConnectJob.topics }}",
     "path.format":"'"'"'year'"'"'=YYYY/'"'"'month'"'"'=MM/'"'"'day'"'"'=dd",
     "locale":"us",
+    "rotate.interval.ms":"120000",
     "timestamp.extractor":"schwartz_kafka_connect.SchwartzTimestampExtractor",
     "timestamp.field":"metric_date",
     "timezone":"UTC",
