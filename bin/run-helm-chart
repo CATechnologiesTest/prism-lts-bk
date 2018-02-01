@@ -34,7 +34,7 @@ check_s3() {
 }
 
 check_s3_health_metrics() {
-  partition="${1:-topics/health-metrics/year=2018/month=01/day=04}"
+  partition="${1:-topics/health-metrics/year=2018/month=01/day=23}"
   aws s3 ls "s3://$bucket_name/$partition/"
 }
 

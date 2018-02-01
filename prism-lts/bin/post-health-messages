@@ -1,0 +1,19 @@
+#!/bin/bash
+
+post_one_message() {
+  curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" \
+          -H "Accept: application/vnd.kafka.v2+json" \
+          --url "http://localhost:8082/topics/health-metrics" \
+          --data '{"value_schema":"{\"type\":\"record\",\"name\":\"user_event\",\"namespace\":\"com.sts\",\"fields\":[{\"name\":\"product_id\",\"type\":\"string\"},{\"name\":\"user_oid\",\"type\":\"string\"},{\"name\":\"first_login\",\"type\":\"string\"},{\"name\":\"product_instance_id\",\"type\":\"string\"},{\"name\":\"metric_date\",\"type\":\"string\"},{\"name\":\"slug_name\",\"type\":\"string\"},{\"name\":\"edition\",\"type\":\"string\"},{\"name\":\"stack\",\"type\":\"string\"}]}","records":[{"value":{"product_id":"wakawakawaka","user_oid":"someothergreatinfo","first_login":"meow","product_instance_id":"thebest","metric_date":"2018-01-04","slug_name":"sluggy-slug-slug","edition":"numero-uno","stack":"full-stack"}}]}'
+}
+
+main (){
+  count=0
+  max_count="${1:-100}"
+  until [[ "$count" -ge "$max_count" ]]; do
+    post_one_message
+    let count+=1
+  done
+}
+
+main "$@"
