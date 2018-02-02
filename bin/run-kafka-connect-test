@@ -68,12 +68,12 @@ check_for_secret() {
 
 set_quay_secret() {
   #NOTE: requires QUAY_USERNAME and QUAY_PASSWORD to be set...
-  set +x
   local namespace="${1:-default}"
   local base64_cmd="base64"
   if [[ "platform" = "linux" ]]; then
     local base64_cmd="base64 -w 0"
   fi
+  set +x
   local quay_auth="$(echo -n "$QUAY_USERNAME:$QUAY_PASSWORD" | $base64_cmd)"
   local quay_auth_json="$(echo -n '{
   "auths": {
