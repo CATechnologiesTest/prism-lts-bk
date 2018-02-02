@@ -1,0 +1,140 @@
+#!/bin/bash -ex
+
+repo_path="$(git rev-parse --show-toplevel)"
+
+platform="unknown"
+if [[ "$(uname)" == "Linux" ]]; then
+  platform="linux"
+elif [[ "$(uname)" == "Darwin" ]]; then
+  platform="mac"
+fi
+
+bucket_name="test-connect-$(uuidgen | tr \"[:upper:]\" \"[:lower:]\")"
+
+check_pod_is_ready() {
+  local app_name="$1"
+  local namespace="${2:-default}"
+  local jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
+
+  local pod_conditions="$(kubectl get po -n "$namespace" -l app="$app_name" -o jsonpath="$jsonpath" 2>&1)"
+  echo "$pod_conditions" | grep "Ready=True"
+}
+
+check_jobs_are_done() {
+  local job_name="$1"
+  local namespace="${2:-default}"
+  local jsonpath="{range @.items[*]}{@.status}{end}"
+  local job_conditions="$(kubectl get jobs -n "$namespace" -o jsonpath="$jsonpath")"
+  echo "$job_conditions" | grep "type:Complete status:True"
+}
+
+install_aws_cli() {
+  curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && unzip awscli-bundle.zip && sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+}
+
+prep_s3() {
+  command -v aws &>/dev/null || install_aws_cli
+  aws s3 mb "s3://$bucket_name" --region "us-west-2"
+}
+
+check_s3() {
+  local topic_name="$1"
+  partition="topics/$topic_name/year=2018/month=01/day=04"
+  aws s3 ls "s3://$bucket_name/$partition/"
+}
+
+clean_up_s3() {
+  aws s3 rb "s3://$bucket_name" --force
+}
+
+repeat_and_sleep() {
+  local max_sleep="${3:-30}"
+  total_sleep=0
+  local command_result="$($1)"
+  until [[ -n "$command_result" || "$total_sleep" -ge "$max_sleep" ]]; do
+    sleep "$2"
+    local command_result="$($1)"
+    let total_sleep+="$2"
+  done
+  if [[ "$total_sleep" -ge "$max_sleep" ]]; then
+      exit 1
+  fi
+}
+
+check_for_secret() {
+  local secret_name="$1"
+  kubectl get secrets | grep -q "$secret_name"
+}
+
+set_quay_secret() {
+  #NOTE: requires QUAY_USERNAME and QUAY_PASSWORD to be set...
+  set +x
+  local namespace="${1:-default}"
+  local base64_cmd="base64"
+  if [[ "platform" = "linux" ]]; then
+    local base64_cmd="base64 -w 0"
+  fi
+  local quay_auth="$(echo -n "$QUAY_USERNAME:$QUAY_PASSWORD" | $base64_cmd)"
+  local quay_auth_json="$(echo -n '{
+  "auths": {
+    "quay.io": {
+      "auth": "'"$quay_auth"'",
+      "email": ""
+    }
+  }
+}' | $base64_cmd)"
+
+  printf "apiVersion: v1\nkind: Secret\nmetadata:\n  name: quay-sts\ndata:\n  .dockerconfigjson: %s\ntype: kubernetes.io/dockerconfigjson" "$quay_auth_json" > quay-sts.yaml
+  set -x
+  kubectl create -f quay-sts.yaml -n "$namespace"
+}
+
+set_aws_secret() {
+  set +x
+  local namespace="${1:-default}"
+  if [ ! -d "$HOME/.aws" ]; then
+    mkdir -p "$HOME/.aws"
+  fi
+  if [ ! -f "$HOME/.aws/credentials" ]; then
+    echo -n '[default]
+aws_access_key_id = '"$AWS_ACCESS_KEY_ID"'
+aws_secret_access_key = '"$AWS_SECRET_ACCESS_KEY" > "$HOME/.aws/credentials"
+  fi
+  set -x
+  kubectl create secret generic aws-s3-creds --from-file="$HOME/.aws/credentials" -n "$namespace"
+}
+
+
+exit_script() {
+  exit_code="$?"
+  #NOTE: comment the next line to not clean up s3 buckets during test
+  clean_up_s3
+  set +x
+  if [ "$exit_code" = 0 ]; then
+      echo "!!!!!!!   TEST PASSED    !!!!!!!"
+  else
+      echo "!!!!!!!   TEST FAILED    !!!!!!!"
+  fi
+  set -x
+  exit "$exit_code"
+}
+
+main () {
+  trap exit_script SIGHUP SIGINT SIGKILL SIGSTOP SIGTERM EXIT
+  check_for_secret "aws-s3-creds" || set_aws_secret
+  check_for_secret "quay-sts" || set_quay_secret
+  prep_s3
+  cd prism-lts
+  helm dep update
+  helm dep build
+  helm upgrade --install test-prism-lts . --set "acUserEventConnectJob.flushSize=2" --set "healthMetricsConnectJob.flushSize=2" --set "acUserEventConnectJob.s3BucketName=$bucket_name" --set "healthMetricsConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
+  repeat_and_sleep 'check_pod_is_ready prism-lts' "1"
+  repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
+  repeat_and_sleep 'check_jobs_are_done' "15" "120"
+  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "ac-user-event"
+  repeat_and_sleep 'check_s3 ac-user-event' "2" "30"
+  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "health-metrics"
+  repeat_and_sleep 'check_s3 health-metrics' "2" "30"
+}
+
+main "$@"

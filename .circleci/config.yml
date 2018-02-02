@@ -17,7 +17,7 @@ jobs:
           command: |
             sudo chown -R $USER /usr/local/bin && sudo chgrp -R $USER /usr/local/bin
             ./bin/install-minikube-and-helm
-            ./bin/run-helm-chart
+            ./bin/run-kafka-connect-test
             cp -r /usr/local/bin/helm $HOME/helm
       - save_cache:
           paths:
