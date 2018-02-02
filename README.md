@@ -34,16 +34,26 @@ If you update any environment specific values or the local kafka chart, you will
 - Run `helm dep update`
 - Run `helm dep build`
 
+### Testing Prism-lts
+
+- Run `./bin/kafka-connect-test`
+- NOTE: requires `$QUAY_USERNAME` and `$QUAY_PASSWORD` to be set OR the `quay-sts` secret.
+- NOTE: requires `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCES_KEY` to be set OR the `aws-s3-creds` secret.
+
 ### Running Prism-lts
 
 `<release_name>` is how you will refer to your installation of the helm chart in your local cluster.
 - Your first run will use the command: `helm install --replace --name=<release name> ./prism-lts --set tags.prism-lts-local-values=true`
 - After the first run, use the command: `helm upgrade --install <release_name> ./prism-lts --set tags.prism-lts-local-values=true`
 
+### Testing Prism-lts
+
+Run `/bin/run-kafka-connect-test`.
+
 ### To Send Data to the REST Proxy
 - setup port forwarding for the local kafka rest proxy: `kubectl port-forward $(kubectl get po -o name -l app=local-kafka-rest --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082`
 - view the logs with: `kubectl logs $(kubectl get po -o name -l app=prism-lts --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) -c prism-lts`
-- finally, run: `./prism-lts/bin/post-messages <desired num messages>` to send a bunch of messages onto the local kafka bus
+- finally, run: `./bin/send_a_bunch_of_data <topic name> <desired num messages>` to send a bunch of messages onto the local kafka bus
 
 ### Updating the Kafka Connect Docker Image
 

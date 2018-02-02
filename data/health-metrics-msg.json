@@ -1,0 +1,244 @@
+{
+  "value_schema":"{
+     \"type\": \"record\",
+     \"name\": \"HealthMetric\",
+     \"namespace\": \"com.sts\",
+     \"fields\": [
+       {
+         \"name\": \"product_id\",
+         \"type\": \"string\"
+       },
+       {
+         \"name\": \"product_instance_id\",
+         \"type\": \"string\"
+       },
+       {
+         \"name\": \"user_id\",
+         \"type\": [\"null\",\"string\"],
+         \"default\": null
+       },
+       {
+         \"name\": \"entitlement\",
+         \"type\": [
+           \"null\",
+           {
+             \"type\": \"record\",
+             \"name\": \"entitlementInfo\",
+             \"fields\": [
+               {
+                 \"name\": \"sfdc_account_id\",
+                 \"type\": \"string\"
+               },
+               {
+                 \"name\": \"sap_material_id\",
+                 \"type\": \"string\"
+               },
+               {
+                 \"name\": \"tops_product_code\",
+                 \"type\": \"string\"
+               },
+               {
+                 \"name\": \"software_type\",
+                 \"type\": \"string\"
+               },
+               {
+                 \"name\": \"support_site_ids\",
+                 \"type\": {
+                   \"type\": \"array\",
+                   \"items\": \"string\"
+                 }
+               }
+             ]
+           }
+         ],
+         \"default\": null
+       },
+       {
+         \"name\": \"sfdc_account_id\",
+         \"type\": \"string\"
+       },
+       {
+         \"name\": \"description\",
+         \"type\": [\"null\",\"string\"]
+       },
+       {
+         \"name\": \"metric_date\",
+         \"type\": \"string\"
+       },
+       {
+         \"name\": \"health\",
+         \"type\": \"double\"
+       },
+       {
+         \"name\": \"metrics\",
+         \"type\": {
+           \"type\": \"map\",
+           \"values\": [
+             \"string\",
+             {
+               \"type\": \"map\",
+               \"values\": \"string\"
+             }
+           ]
+         }
+       }
+     ]
+   }",
+"records": [
+    {
+      "value": {
+        "product_id": "ALM",
+        "product_instance_id": "125524",
+        "user_id": null,
+        "entitlement": {
+          "com.sts.entitlementInfo": {
+            "sfdc_account_id": "0013000000HQY9PAAX",
+            "sap_material_id": "AGCUNL990",
+            "tops_product_code": "AGCUNL99000",
+            "software_type": "saas",
+            "support_site_ids": [
+              "00000195222"
+            ]
+          }
+        },
+        "sfdc_account_id": "0013000000HQY9PAAX",
+        "description": {
+          "string": "ALM Health Metrics"
+        },
+        "metric_date": "2018-01-04",
+        "health": 6.28,
+        "metrics": {
+          "perc_user_provisioned": {
+            "string": "0.714"
+          },
+          "weekly_task_growth": {
+            "string": "8"
+          },
+          "monthly_perc_user_utilization": {
+            "string": "0.95"
+          },
+          "release_count": {
+            "string": "3"
+          },
+          "weekly_perc_user_utilization": {
+            "string": "0.65"
+          },
+          "date_dimension_id": {
+            "string": "2018-01-04"
+          },
+          "created_at": {
+            "string": "2018-01-03 04:33:10 UTC"
+          },
+          "weekly_portfolio_item_growth": {
+            "string": "2"
+          },
+          "per_user_us_growth": {
+            "string": "0.05"
+          },
+          "defect_count": {
+            "string": "14"
+          },
+          "weekly_test_case_growth": {
+            "string": "0"
+          },
+          "thirty_day_users": {
+            "string": "19"
+          },
+          "task_count": {
+            "string": "663"
+          },
+          "weekly_defect_growth": {
+            "string": "0"
+          },
+          "per_user_portfolio_item_growth": {
+            "string": "0.11"
+          },
+          "updated_at": {
+            "string": "2018-01-04 18:53:25 UTC"
+          },
+          "subscription_dimension_id": {
+            "string": "275410"
+          },
+          "monthly_defect_growth": {
+            "string": "6"
+          },
+          "monthly_test_case_growth": {
+            "string": "1"
+          },
+          "id": {
+            "string": "6478760"
+          },
+          "total_seats": {
+            "string": "28"
+          },
+          "user_story_count": {
+            "string": "1191"
+          },
+          "per_user_tc_growth": {
+            "string": "0.0"
+          },
+          "monthly_task_growth": {
+            "string": "152"
+          },
+          "weekly_user_story_growth": {
+            "string": "1"
+          },
+          "monthly_user_story_growth": {
+            "string": "37"
+          },
+          "health": {
+            "string": "6.28"
+          },
+          "per_user_task_growth": {
+            "string": "0.42"
+          },
+          "monthly_users": {
+            "string": "19"
+          },
+          "portfolio_item_count": {
+            "string": "54"
+          },
+          "daily_users": {
+            "string": "7"
+          },
+          "avg_weekly_users": {
+            "string": "13.71"
+          },
+          "iteration_count": {
+            "string": "16"
+          },
+          "active_release_count": {
+            "string": "1"
+          },
+          "test_case_count": {
+            "string": "26"
+          },
+          "per_user_defect_growth": {
+            "string": "0.0"
+          },
+          "monthly_artifact_growth": {
+            "string": "206"
+          },
+          "enabled_users": {
+            "string": "20"
+          },
+          "active_iteration_count": {
+            "string": "2"
+          },
+          "ninety_day_users": {
+            "string": "19"
+          },
+          "weekly_users": {
+            "string": "13"
+          },
+          "health2": {
+            "string": "6.47"
+          },
+          "monthly_portfolio_item_growth": {
+            "string": "10"
+          }
+        }
+      }
+    }
+  ]
+}
