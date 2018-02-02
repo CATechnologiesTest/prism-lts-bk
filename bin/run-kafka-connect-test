@@ -70,7 +70,7 @@ set_quay_secret() {
   #NOTE: requires QUAY_USERNAME and QUAY_PASSWORD to be set...
   local namespace="${1:-default}"
   local base64_cmd="base64"
-  if [[ "platform" = "linux" ]]; then
+  if [ "platform" = "linux" ]; then
     local base64_cmd="base64 -w 0"
   fi
   set +x
