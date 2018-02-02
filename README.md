@@ -48,7 +48,7 @@ If you update any environment specific values or the local kafka chart, you will
 
 ### Testing Prism-lts
 
-Run './bin/kafka-connect-test'.
+Run `/bin/run-kafka-connect-test`.
 
 ### To Send Data to the REST Proxy
 - setup port forwarding for the local kafka rest proxy: `kubectl port-forward $(kubectl get po -o name -l app=local-kafka-rest --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082`

@@ -87,6 +87,7 @@ set_quay_secret() {
   printf "apiVersion: v1\nkind: Secret\nmetadata:\n  name: quay-sts\ndata:\n  .dockerconfigjson: %s\ntype: kubernetes.io/dockerconfigjson" "$quay_auth_json" > quay-sts.yaml
   set -x
   kubectl create -f quay-sts.yaml -n "$namespace"
+  rm quay-sts.yaml
 }
 
 set_aws_secret() {
