@@ -3,7 +3,7 @@ kafkaConnect:
   heapOpts: "-Xms64m -Xmx128m"
   replicaCount: 1
   imageSecretName: "quay-sts"
-  image: "quay.io/stsatlas/schwartz-kafka-connect:test-partition14"
+  image: "quay.io/stsatlas/schwartz-kafka-connect:ad64f05798302ac75980662e9b6ae9c962b4fd39"
   connectInternalKeyConverter: "org.apache.kafka.connect.json.JsonConverter"
   connectInternalValueConverter: "org.apache.kafka.connect.json.JsonConverter"
   connectKeyConverter: "io.confluent.connect.avro.AvroConverter"
