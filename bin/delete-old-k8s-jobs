@@ -1,0 +1,7 @@
+#!/bin/bash -ex
+
+main() {
+  kubectl delete $(kubectl get job -o name | tr -s "\n" " ")
+}
+
+main
