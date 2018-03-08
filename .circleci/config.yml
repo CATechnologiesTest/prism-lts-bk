@@ -68,7 +68,7 @@ jobs:
 
 workflows:
   version: 2
-  build_and_deploy:
+  weekly:
     triggers:
       - schedule:
           cron: "0 11 * * 1"
@@ -76,6 +76,15 @@ workflows:
             branches:
               only:
                 - master
+    jobs:
+      - test
+      - deploy_dev:
+          requires:
+            - test
+      - deploy_prod:
+          requires:
+            - test
+  commit:
     jobs:
       - test
       - deploy_dev:
