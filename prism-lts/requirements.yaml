@@ -28,8 +28,8 @@ dependencies:
   import-values:
     - environment-specific-data
 - name: local-kafka
-  version: "0.2.0"
-  repository: "@prism-helm-repo"
+  version: "0.1.0"
+  repository: "file://../local-kafka"
   tags:
     - prism-lts-local-values
     - prism-lts-test-values
