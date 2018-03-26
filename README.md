@@ -29,7 +29,7 @@ We are using a custom partition scheme forked from the Hellfish's team `RallySof
 - Run `helm init`
 - Get dependencies for prism-lts by running `helm dep update prism-lts && helm dep build prism-lts` from the root of this project
 
-### Updating the `local-kafka` chart or `local-charts` [environment specific] values
+### Updating the `local-charts` [environment specific] values
 
 If you update any environment specific values or the local kafka chart, you will need to update and build dependencies in prism-lts again.
 
