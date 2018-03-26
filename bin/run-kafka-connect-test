@@ -134,9 +134,9 @@ main () {
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
   repeat_and_sleep 'check_jobs_are_done' "15" "120"
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "ac-user-event"
-  repeat_and_sleep 'check_s3 com.sts.user-event' "2" "30"
+  repeat_and_sleep 'check_s3 com.sts.user-event' "2" "40"
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "health-metrics"
-  repeat_and_sleep 'check_s3 com.sts.HealthMetric' "2" "30"
+  repeat_and_sleep 'check_s3 com.sts.HealthMetric' "2" "40"
 }
 
 main "$@"

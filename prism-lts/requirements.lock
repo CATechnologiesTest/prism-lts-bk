@@ -12,7 +12,7 @@ dependencies:
   repository: file://local-charts/prism-lts-test
   version: 0.1.0
 - name: local-kafka
-  repository: file://../local-kafka
-  version: 0.1.0
-digest: sha256:fa41e86356d9bfdfbda281d4336c8584624660d4add6cc8fd30a8e5f153f6f9c
-generated: 2018-01-03T14:54:07.372464091-07:00
+  repository: https://2d2999a838566b7b16c10d76937d198f903b350f@raw.githubusercontent.com/sts-atlas/prism-helm-repo/master/
+  version: 0.2.0
+digest: sha256:3d6eef1158acc11f707b19c7c2c7dd8573a3cd7575d119c05d2a087e46ee5d5b
+generated: 2018-03-26T12:21:40.105089661-06:00
