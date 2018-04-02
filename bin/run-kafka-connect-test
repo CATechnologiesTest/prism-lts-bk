@@ -129,14 +129,14 @@ main () {
   cd prism-lts
   helm dep update
   helm dep build
-  helm upgrade --install test-prism-lts . --set "acUserEventConnectJob.flushSize=2" --set "healthMetricsConnectJob.flushSize=2" --set "acUserEventConnectJob.s3BucketName=$bucket_name" --set "healthMetricsConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait
+  helm upgrade --install test-prism-lts . --set "acUserEventConnectJob.flushSize=2" --set "healthMetricsConnectJob.flushSize=2" --set "acUserEventConnectJob.s3BucketName=$bucket_name" --set "healthMetricsConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait --timeout 600
   repeat_and_sleep 'check_pod_is_ready prism-lts' "1"
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
   repeat_and_sleep 'check_jobs_are_done' "15" "120"
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "ac-user-event"
-  repeat_and_sleep 'check_s3 com.sts.user-event' "2" "40"
+  repeat_and_sleep 'check_s3 com.sts.user-event' "2" "50"
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "health-metrics"
-  repeat_and_sleep 'check_s3 com.sts.HealthMetric' "2" "40"
+  repeat_and_sleep 'check_s3 com.sts.HealthMetric' "2" "50"
 }
 
 main "$@"
