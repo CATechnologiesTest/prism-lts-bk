@@ -2,7 +2,7 @@
 
 environment="$1"
 namespace="prism"
-jumpgate_user_name="deploy-data-processing"
+jumpgate_user_name="deploy-prism"
 helm_cmd_tiller_option="--tiller-namespace $namespace"
 helm_cmd_options="$helm_cmd_tiller_option --namespace $namespace"
 helm_set_vars="--set tags.prism-lts-$environment-values=true"
@@ -58,7 +58,7 @@ jumpgate_helm_rollback() {
 get_current_status() {
     local release_name="$1"
     local awk_print='{print $4}'
-    local cmd="helm ls $release_name --tiller-namespace data-processing -a --max 1 --date --reverse | awk -F '\t' '$awk_print' | tail -n 1"
+    local cmd="helm ls $release_name --tiller-namespace $namespace -a --max 1 --date --reverse | awk -F '\t' '$awk_print' | tail -n 1"
     jumpgate_exec "$cmd"
 }
 
