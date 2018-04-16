@@ -20,12 +20,26 @@ exports:
       flushSize: 250
       rotateInterval: 15000
       serviceDomainName: "prism-lts.prism.svc.k8s"
+      resources:
+        limits:
+          cpu: "50m"
+          memory: "200Mi"
+        requests:
+          cpu: "50m"
+          memory: "200Mi"
     acUserEventConnectJob:
       name: "lts-prod-ac-user-event-kc-job"
       s3BucketName: "prod-prism-lts"
       flushSize: 250
       rotateInterval: 15000
       serviceDomainName: "prism-lts.prism.svc.k8s"
+      resources:
+        limits:
+          cpu: "50m"
+          memory: "200Mi"
+        requests:
+          cpu: "50m"
+          memory: "200Mi"
     jmxExporter:
       resources:
         limits:

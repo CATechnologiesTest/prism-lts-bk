@@ -15,10 +15,12 @@ exports:
       flushSize: 2
       rotateInterval: 15000
       serviceDomainName: "prism-lts"
+      resources: false
     acUserEventConnectJob:
       name: "lts-local-ac-user-event-kc-job"
       s3BucketName: "local-prism-lts"
       flushSize: 2
       rotateInterval: 15000
       serviceDomainName: "prism-lts"
+      resources: false
     namespace: "default"

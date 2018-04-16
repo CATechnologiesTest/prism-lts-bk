@@ -22,6 +22,10 @@ spec:
         volumeMounts:
         - mountPath: /tmp
           name: health-metrics-job-script
+        {{- with .Values.healthMetricsConnectJob.resources}}
+        resources:
+{{ toYaml . | indent 10 }}
+        {{- end}}
       restartPolicy: OnFailure
       volumes:
       - configMap:

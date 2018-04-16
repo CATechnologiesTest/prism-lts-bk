@@ -22,6 +22,10 @@ spec:
         volumeMounts:
         - mountPath: /tmp
           name: ac-user-event-job-script
+        {{- with .Values.acUserEventConnectJob.resources}}
+        resources:
+{{ toYaml . | indent 10 }}
+        {{- end}}
       restartPolicy: OnFailure
       volumes:
       - configMap:
