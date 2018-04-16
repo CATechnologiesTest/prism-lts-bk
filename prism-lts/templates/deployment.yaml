@@ -64,7 +64,7 @@ spec:
         - name: CONNECT_LOG4J_ROOT_LEVEL
           value: "INFO"
         - name: CONNECT_GROUP_ID
-          value: "s3-worker-group"
+          value: "s3-worker-group-00"
         - name: CONNECT_OFFSET_STORAGE_TOPIC
           value: "connect-offsets"
         - name: CONNECT_CONFIG_STORAGE_TOPIC
