@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 
 environment="$1"
-namespace="data-processing"
+namespace="prism"
 jumpgate_user_name="deploy-data-processing"
 helm_cmd_tiller_option="--tiller-namespace $namespace"
 helm_cmd_options="$helm_cmd_tiller_option --namespace $namespace"

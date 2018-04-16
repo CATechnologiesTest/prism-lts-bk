@@ -1,5 +1,4 @@
 kafkaConnect:
-  memoryRequest: "128Mi"
   heapOpts: "-Xms64m -Xmx128m"
   replicaCount: 1
   imageSecretName: "quay-sts"

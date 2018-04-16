@@ -36,7 +36,9 @@ spec:
         ports:
         - containerPort: 9138
           protocol: TCP
-        resources: {}
+        {{- with .Values.jmxExporter.resources}}
+        resources: {{ . }}
+        {{- end}}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
@@ -45,10 +47,10 @@ spec:
           readOnly: true
       - image: {{ .Values.kafkaConnect.image | quote }}
         imagePullPolicy: Always
+        {{- with .Values.kafkaConnect.resources}}
+        resources: {{ . }}
+        {{- end}}
         name: prism-lts
-        resources:
-          requests:
-            memory: {{ .Values.kafkaConnect.memoryRequest | quote }}
         volumeMounts:
         - mountPath: /root/.aws
           name: aws-s3-creds
