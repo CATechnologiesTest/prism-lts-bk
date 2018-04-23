@@ -10,10 +10,10 @@ exports:
       resources:
         limits:
           cpu: "300m"
-          memory: "1.5Gi"
+          memory: "2Gi"
         requests:
           cpu: "300m"
-          memory: "1.5Gi"
+          memory: "2Gi"
     healthMetricsConnectJob:
       name: "lts-prod-health-metrics-kc-job"
       s3BucketName: "prod-prism-lts"
