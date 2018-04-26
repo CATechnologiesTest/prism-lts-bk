@@ -2,6 +2,7 @@
 
 environment="$1"
 namespace="prism"
+git_sha="$(git rev-parse HEAD)"
 jumpgate_user_name="deploy-prism"
 helm_cmd_tiller_option="--tiller-namespace $namespace"
 helm_cmd_options="$helm_cmd_tiller_option --namespace $namespace"
