@@ -35,7 +35,7 @@ jumpgate_helm_upgrade() {
     local release_name="$1"
     local package_loc="$2"
     local options="$3"
-    local cmd="helm upgrade --wait --timeout 150 $release_name ./$package_loc $helm_cmd_options $helm_set_vars $options"
+    local cmd="helm upgrade --wait --timeout 300 $release_name ./$package_loc $helm_cmd_options $helm_set_vars $options"
 
     jumpgate_exec "$cmd"
 }
