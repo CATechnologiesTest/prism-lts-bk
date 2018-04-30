@@ -1,5 +1,15 @@
 version: 2
 jobs:
+
+  build_image:
+    docker:
+      - image: circleci/clojure:lein-2.7.1
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: bin/build-image
   test:
     machine: true
     environment:
@@ -63,7 +73,10 @@ workflows:
             - test
   commit:
     jobs:
-      - test
+      - build_image
+      - test:
+          requires:
+            - build_image
       - deploy_prod:
           requires:
             - test
