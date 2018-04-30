@@ -1,8 +1,6 @@
 #!/bin/bash -ex
 
 repo_path="$(git rev-parse --show-toplevel)"
-git_sha="$(git rev-parse HEAD)"
-image_name="quay.io/stsatlas/prism-kafka-connect:$git_sha"
 
 platform="unknown"
 if [[ "$(uname)" == "Linux" ]]; then
@@ -108,12 +106,6 @@ aws_secret_access_key = '"$AWS_SECRET_ACCESS_KEY" > "$HOME/.aws/credentials"
   kubectl create secret generic aws-s3-creds --from-file="$HOME/.aws/credentials" -n "$namespace"
 }
 
-build_image() {
-    if [[ "$platform" = "mac" ]]; then
-        eval $(minikube docker-env)
-        docker build . -t "$image_name"
-    fi
-}
 
 exit_script() {
   exit_code="$?"
@@ -134,11 +126,10 @@ main () {
   check_for_secret "aws-s3-creds" || set_aws_secret
   check_for_secret "quay-sts" || set_quay_secret
   prep_s3
-  build_image
   cd prism-lts
   helm dep update
   helm dep build
-  helm upgrade --install test-prism-lts . --set "kafkaConnect.image=$image_name" --set "acUserEventConnectJob.flushSize=2" --set "healthMetricsConnectJob.flushSize=2" --set "acUserEventConnectJob.s3BucketName=$bucket_name" --set "healthMetricsConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait --timeout 600
+  helm upgrade --install test-prism-lts . --set "acUserEventConnectJob.flushSize=2" --set "healthMetricsConnectJob.flushSize=2" --set "acUserEventConnectJob.s3BucketName=$bucket_name" --set "healthMetricsConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait --timeout 600
   repeat_and_sleep 'check_pod_is_ready prism-lts' "1"
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
   repeat_and_sleep 'check_jobs_are_done' "15" "120"
