@@ -102,7 +102,7 @@ spec:
         - name: CONNECT_STATUS_STORAGE_PARTITIONS
           value: {{ .Values.kafkaConnect.partitions | default "12" | quote }}
         - name: CONNECT_PLUGIN_PATH
-          value: "/usr/local/share/kafka/plugins"
+          value: "/usr/share/java"
         ports:
         - containerPort: 8083
           protocol: TCP
