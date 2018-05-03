@@ -6,4 +6,4 @@ RUN lein uberjar
 
 FROM confluentinc/cp-kafka-connect:4.0.0
 ENV KAFKA_CONNECT_JAR_NAME="prism-kafka-connect-standalone.jar"
-COPY --from=builder /app/target/$KAFKA_CONNECT_JAR_NAME /usr/share/java
+COPY --from=builder /app/target/$KAFKA_CONNECT_JAR_NAME /usr/share/java/prism-kafka-connect/
