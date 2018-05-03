@@ -17,8 +17,8 @@ exports:
     healthMetricsConnectJob:
       name: "lts-prod-health-metrics-kc-job"
       s3BucketName: "prod-prism-lts"
-      flushSize: 2000
-      rotateInterval: 300000
+      flushSize: 250
+      rotateInterval: 15000
       serviceDomainName: "prism-lts.prism.svc.k8s"
       resources:
         limits:
@@ -30,8 +30,8 @@ exports:
     acUserEventConnectJob:
       name: "lts-prod-ac-user-event-kc-job"
       s3BucketName: "prod-prism-lts"
-      flushSize: 2000
-      rotateInterval: 300000
+      flushSize: 250
+      rotateInterval: 15000
       serviceDomainName: "prism-lts.prism.svc.k8s"
       resources:
         limits:

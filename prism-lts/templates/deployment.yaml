@@ -47,7 +47,7 @@ spec:
           name: jmx-config-file
           readOnly: true
       - image: {{ .Values.kafkaConnect.image | quote }}
-        imagePullPolicy: {{ .Values.kafkaConnect.imagePullPolicy | default "Always" | quote }}
+        imagePullPolicy: Always
         {{- with .Values.kafkaConnect.resources}}
         resources:
 {{ toYaml . | indent 10 }}
@@ -64,7 +64,7 @@ spec:
         - name: CONNECT_LOG4J_ROOT_LEVEL
           value: "INFO"
         - name: CONNECT_GROUP_ID
-          value: "s3-worker-group-03"
+          value: "s3-worker-group-01"
         - name: CONNECT_OFFSET_STORAGE_TOPIC
           value: "connect-offsets"
         - name: CONNECT_CONFIG_STORAGE_TOPIC
@@ -91,28 +91,16 @@ spec:
           value: {{ .Values.kafkaConnect.connectValueConverterSchemaRegistryUrl | quote }}
         - name: CONNECT_REST_ADVERTISED_HOST_NAME
           value: {{ template "name" . }}
-        - name: CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR
-          value: {{ .Values.kafkaConnect.replicationFactor | default "3" | quote }}
-        - name: CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR
-          value: {{ .Values.kafkaConnect.replicationFactor | default "3" | quote }}
-        - name: CONNECT_STATUS_STORAGE_REPLICATION_FACTOR
-          value: {{ .Values.kafkaConnect.replicationFactor | default "3" | quote }}
-        - name: CONNECT_OFFSET_STORAGE_PARTITIONS
-          value: {{ .Values.kafkaConnect.partitions | default "12" | quote }}
-        - name: CONNECT_STATUS_STORAGE_PARTITIONS
-          value: {{ .Values.kafkaConnect.partitions | default "12" | quote }}
-        - name: CONNECT_PLUGIN_PATH
-          value: "/usr/share/java"
         ports:
         - containerPort: 8083
           protocol: TCP
         readinessProbe:
-          failureThreshold: 5
+          failureThreshold: 3
           httpGet:
             path: /
             port: 8083
             scheme: HTTP
-          periodSeconds: 30
+          periodSeconds: 10
           successThreshold: 1
           timeoutSeconds: 1
 #        command: ["/bin/sh"]
