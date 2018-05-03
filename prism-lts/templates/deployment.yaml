@@ -64,7 +64,7 @@ spec:
         - name: CONNECT_LOG4J_ROOT_LEVEL
           value: "INFO"
         - name: CONNECT_GROUP_ID
-          value: "s3-worker-group-01"
+          value: "s3-worker-group-03"
         - name: CONNECT_OFFSET_STORAGE_TOPIC
           value: "connect-offsets"
         - name: CONNECT_CONFIG_STORAGE_TOPIC
@@ -107,12 +107,12 @@ spec:
         - containerPort: 8083
           protocol: TCP
         readinessProbe:
-          failureThreshold: 3
+          failureThreshold: 5
           httpGet:
             path: /
             port: 8083
             scheme: HTTP
-          periodSeconds: 10
+          periodSeconds: 30
           successThreshold: 1
           timeoutSeconds: 1
 #        command: ["/bin/sh"]
