@@ -20,7 +20,7 @@ data:
     "schema.generator.class":"io.confluent.connect.storage.hive.schema.DefaultSchemaGenerator",
     "format.class":"io.confluent.connect.s3.format.avro.AvroFormat",
     "storage.class":"io.confluent.connect.s3.storage.S3Storage",
-    "partitioner.class":"schwartz_kafka_connect.partitioner.SchemaBasedPartitioner",
+    "partitioner.class":"prism_kafka_connect.partitioner.SchemaBasedPartitioner",
     "schema.compatibility":"NONE",
     "locale":"us",
     "timezone":"UTC",

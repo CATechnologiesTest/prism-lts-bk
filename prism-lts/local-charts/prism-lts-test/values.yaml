@@ -6,6 +6,9 @@ exports:
       connectKeyConverterSchemaRegistryUrl: "http://local-schema-registry:8081"
       connectValueConverterSchemaRegistryUrl: "http://local-schema-registry:8081"
       s3SecretName: "aws-s3-creds"
+      imagePullPolicy: "IfNotPresent"
+      replicationFactor: "1"
+      partitions: "1"
       restartPolicy: "Always"
     jmxExporter:
       resources: false
