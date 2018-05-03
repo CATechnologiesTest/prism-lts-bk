@@ -2,11 +2,10 @@
 
 environment="$1"
 namespace="prism"
-git_sha="$(git rev-parse HEAD)"
 jumpgate_user_name="deploy-prism"
 helm_cmd_tiller_option="--tiller-namespace $namespace"
 helm_cmd_options="$helm_cmd_tiller_option --namespace $namespace"
-helm_set_vars="--set tags.prism-lts-$environment-values=true --set kafkaConnect.image=quay.io/stsatlas/prism-kafka-connect:$git_sha"
+helm_set_vars="--set tags.prism-lts-$environment-values=true"
 
 copy_to_jumpgate() {
     scp "$1" "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io:"
@@ -26,7 +25,7 @@ jumpgate_helm_install() {
     local release_name="$1"
     local package_loc="$2"
     local options="$3"
-    local cmd="helm install --wait --timeout 150 --name $release_name ./$package_loc $helm_cmd_options $helm_set_vars $options"
+    local cmd="helm install --wait --timeout 300 --name $release_name ./$package_loc $helm_cmd_options $helm_set_vars $options"
 
     jumpgate_exec "$cmd"
 }
