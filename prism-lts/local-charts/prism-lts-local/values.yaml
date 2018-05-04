@@ -23,4 +23,3 @@ exports:
       rotateInterval: 15000
       serviceDomainName: "prism-lts"
       resources: false
-    namespace: "default"

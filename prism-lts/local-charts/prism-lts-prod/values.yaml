@@ -44,8 +44,7 @@ exports:
       resources:
         limits:
           cpu: "100m"
-          memory: "200Mi"
+          memory: "250Mi"
         requests:
           cpu: "100m"
-          memory: "200Mi"
-    namespace: "data-processing"
+          memory: "250Mi"
