@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "prism-lts.stamp" .Values.s3ConnectorJob.name }}
+  annotations:
+    checksum/configMap: {{ template "prism-lts.checksum" tuple $ "/s3-connector-cm.yaml" }}
+    checksum/deployment: {{ template "prism-lts.checksum" tuple $ "/deployment.yaml" }}
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "0"
+spec:
+  template:
+    metadata:
+      name: {{ .Values.s3ConnectorJob.name }}
+    spec:
+      restartPolicy: OnFailure
+      imagePullSecrets:
+      - name: {{ .Values.s3ConnectorJob.imageSecretName | quote }}
+      containers:
+      - name: s3-connector-job
+        image: "{{ .Values.s3ConnectorJob.image }}:{{ .Values.s3ConnectorJob.tag}}"
+        command: ["bash", "-ex", "/tmp/s3-connector-script"]
+        volumeMounts:
+        - mountPath: /tmp
+          name: s3-connector-job-script
+        env:
+        {{- include "prism-lts.config" .Values.s3ConnectorJob.config | indent 8 }}
+        - name: CONNECTOR_TOPICS
+          value: {{ join "," .Values.s3ConnectorJob.topics | quote }}
+        - name: PRISM_LTS_HOST
+          value: {{ template "prism-lts.serviceHost" $ }}
+        {{- with .Values.s3ConnectorJob.resources}}
+        resources:
+{{ toYaml . | indent 10 }}
+        {{- end}}
+      volumes:
+      - configMap:
+          defaultMode: 500
+          name: s3-connector-job-script
+        name: s3-connector-job-script

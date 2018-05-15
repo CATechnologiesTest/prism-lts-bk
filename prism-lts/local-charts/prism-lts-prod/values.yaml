@@ -6,7 +6,6 @@ exports:
       connectKeyConverterSchemaRegistryUrl: "http://kafka-01:8081"
       connectValueConverterSchemaRegistryUrl: "http://kafka-01:8081"
       s3SecretName: "prism-lts-s3-access"
-      restartPolicy: "Always"
       resources:
         limits:
           cpu: "300m"
@@ -14,25 +13,11 @@ exports:
         requests:
           cpu: "300m"
           memory: "2Gi"
-    healthMetricsConnectJob:
-      name: "lts-prod-health-metrics-kc-job"
-      s3BucketName: "prod-prism-lts"
-      flushSize: 250
-      rotateInterval: 15000
-      serviceDomainName: "prism-lts.prism.svc.k8s"
-      resources:
-        limits:
-          cpu: "50m"
-          memory: "200Mi"
-        requests:
-          cpu: "50m"
-          memory: "200Mi"
-    acUserEventConnectJob:
-      name: "lts-prod-ac-user-event-kc-job"
-      s3BucketName: "prod-prism-lts"
-      flushSize: 250
-      rotateInterval: 15000
-      serviceDomainName: "prism-lts.prism.svc.k8s"
+    s3ConnectorJob:
+      config:
+        FLUSH_SIZE: 250
+        ROTATE_INTERVAL: 15000
+        S3_BUCKET_NAME: "prod-prism-lts"
       resources:
         limits:
           cpu: "50m"

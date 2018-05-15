@@ -129,14 +129,30 @@ main () {
   cd prism-lts
   helm dep update
   helm dep build
-  helm upgrade --install test-prism-lts . --set "acUserEventConnectJob.flushSize=2" --set "healthMetricsConnectJob.flushSize=2" --set "acUserEventConnectJob.s3BucketName=$bucket_name" --set "healthMetricsConnectJob.s3BucketName=$bucket_name" --set tags.prism-lts-test-values=true --wait --timeout 600
+  helm upgrade --install test-prism-lts . \
+       --set "s3ConnectorJob.config.S3_BUCKET_NAME=$bucket_name" \
+       --set tags.prism-lts-test-values=true \
+       --wait --timeout 600 --debug
   repeat_and_sleep 'check_pod_is_ready prism-lts' "1"
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
   repeat_and_sleep 'check_jobs_are_done' "15" "120"
+
+  # Site Modules
+  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-modules"
+  repeat_and_sleep 'check_s3 com.sts.SiteModule' "2" "80"
+
+  # Site Usage Metrics
+  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-usage-metrics"
+  repeat_and_sleep 'check_s3 com.sts.SiteHealthMetric' "2" "80"
+
+  # AC User Event
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "ac-user-event"
-  repeat_and_sleep 'check_s3 com.sts.user-event' "2" "50"
+  repeat_and_sleep 'check_s3 com.sts.user-event' "2" "80"
+
+  # Health Metrics
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "health-metrics"
-  repeat_and_sleep 'check_s3 com.sts.HealthMetric' "2" "50"
+  repeat_and_sleep 'check_s3 com.sts.HealthMetric' "2" "80"
+
 }
 
 main "$@"

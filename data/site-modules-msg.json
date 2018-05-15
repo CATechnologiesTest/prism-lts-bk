@@ -1,0 +1,109 @@
+{
+  "value_schema":"{
+     \"type\":\"record\",
+     \"name\":\"SiteModule\",
+     \"namespace\":\"com.sts\",
+     \"fields\":[
+        {
+           \"name\":\"product_id\",
+           \"type\":\"string\"
+        },
+        {
+           \"name\":\"customer_id\",
+           \"type\":\"string\"
+        },
+        {
+           \"name\":\"instance_id\",
+           \"type\":\"string\"
+        },
+        {
+           \"name\":\"metric_date\",
+           \"type\":\"string\"
+        },
+        {
+           \"name\":\"name\",
+           \"type\":\"string\"
+        },
+        {
+           \"name\":\"module_id\",
+           \"type\":[
+              \"null\",
+              \"string\"
+           ],
+           \"default\":null
+        },
+        {
+           \"name\":\"parent\",
+           \"type\":[
+              \"null\",
+              \"string\"
+           ],
+           \"default\":null
+        },
+        {
+           \"name\":\"version\",
+           \"type\":[
+              \"null\",
+              \"string\"
+           ],
+           \"default\":null
+        },
+        {
+           \"name\":\"module_type\",
+           \"type\":[
+              \"null\",
+              \"string\"
+           ],
+           \"default\":null
+        },
+        {
+           \"name\":\"active\",
+           \"type\":[
+              \"null\",
+              \"boolean\"
+           ],
+           \"default\":null
+        },
+        {
+           \"name\":\"extra\",
+           \"type\":[
+              \"null\",
+              {
+                 \"type\":\"map\",
+                 \"values\":\"string\"
+              }
+           ],
+           \"default\":null
+        },
+        {
+           \"name\":\"api_user\",
+           \"type\":[\"null\",\"string\"],
+           \"default\":null
+        },
+        {
+           \"name\":\"api_key_name\",
+           \"type\":[\"null\",\"string\"],
+           \"default\":null
+        }
+     ]
+  }",
+  "records": [
+    {
+      "value": {
+        "product_id": "ALM",
+        "customer_id": "acme",
+        "instance_id": "asd",
+        "metric_date": "2018-05-14",
+        "name": "foo",
+        "module_id": null,
+        "parent": null,
+        "version": null,
+        "module_type": null,
+        "active": null,
+        "extra": null,
+        "api_user": null,
+        "api_key_name": null
+      }
+    }
+  ]
+}

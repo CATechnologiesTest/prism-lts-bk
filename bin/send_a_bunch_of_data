@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 
 repo_path="$(git rev-parse --show-toplevel)"
 
@@ -10,6 +10,7 @@ post_some_data_to_kafka() {
             curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" \
             -H "Accept: application/vnd.kafka.v2+json" \
             --url "http://localhost:8082/topics/$topic_name" \
+            --fail \
             --data "$data"
 }
 
@@ -18,7 +19,7 @@ main() {
     local max_count="${2:-10}"
     count=0
     until [[ "$count" -ge "$max_count" ]]; do
-        post_some_data_to_kafka "$topic_name"
+        post_some_data_to_kafka "$topic_name" || exit 1
         let count+=1
     done
 }

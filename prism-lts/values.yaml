@@ -1,35 +1,41 @@
 kafkaConnect:
+  kafkaServers: "local-kafka:9092"
   heapOpts: "-Xms64m -Xmx128m"
+  restartPolicy: "Always"
   replicaCount: 1
+  s3SecretName: "aws-s3-creds"
   imageSecretName: "quay-sts"
   image: "quay.io/stsatlas/schwartz-kafka-connect:5f13164d3889143d9044023852a5aa804b6f896b"
+  connectKeyConverterSchemaRegistryUrl: "http://local-schema-registry:8081"
+  connectValueConverterSchemaRegistryUrl: "http://local-schema-registry:8081"
   connectInternalKeyConverter: "org.apache.kafka.connect.json.JsonConverter"
   connectInternalValueConverter: "org.apache.kafka.connect.json.JsonConverter"
   connectKeyConverter: "io.confluent.connect.avro.AvroConverter"
   connectValueConverter: "io.confluent.connect.avro.AvroConverter"
 
-k8sJob:
+jmxExporter:
+  resources: false
+
+s3ConnectorJob:
+  name: "s3-connector-job"
   imageSecretName: "quay-sts"
-  image: "quay.io/stsatlas/bash-curl:21d470eaddc292462c07d08ca19319caf2e55417"
-
-healthMetricsConnectJob:
-  name: "lts-test-health-metrics-kc-job"
-  topics: "health-metrics"
-  timestampExtractor: "Record"
-  flushSize: 2
-  rotateInterval: 15000
-  s3BucketName: "local-prism-lts"
-
-acUserEventConnectJob:
-  name: "lts-test-ac-user-event-kc-job"
-  topics: "ac-user-event"
-  timestampExtractor: "Record"
-  flushSize: 2
-  rotateInterval: 15000
-  s3BucketName: "local-prism-lts"
+  image: "quay.io/stsatlas/bash-curl"
+  tag: "6835c10b66dda3df476d141403464424919b07f0"
+  resources: false
+  topics:
+  - "health-metrics"
+  - "ac-user-event"
+  - "saas-usage-metrics"
+  - "site-modules"
+  - "site-usage-metrics"
+  - "sites"
+  config:
+    CONNECTOR_NAME: "s3-connector"
+    FLUSH_SIZE: 2
+    ROTATE_INTERVAL: 5000
+    S3_BUCKET_NAME: "local-prism-lts"
 
 tags:
   prism-lts-local-values: false
-  prism-lts-dev-values: false
   prism-lts-test-values: false
   prism-lts-prod-values: false

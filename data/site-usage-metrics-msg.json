@@ -1,0 +1,71 @@
+{
+  "value_schema":"{
+      \"type\": \"record\",
+      \"name\": \"SiteHealthMetric\",
+      \"namespace\": \"com.sts\",
+      \"fields\": [{
+              \"name\": \"product_id\",
+              \"type\": \"string\"
+          },
+          {
+              \"name\": \"customer_id\",
+              \"type\": \"string\"
+          },
+          {
+              \"name\": \"instance_id\",
+              \"type\": \"string\"
+          },
+          {
+              \"name\": \"description\",
+              \"type\": [
+                  \"null\",
+                  \"string\"
+              ],
+              \"default\": null
+          },
+          {
+              \"name\": \"metric_date\",
+              \"type\": \"string\"
+          },
+          {
+              \"name\": \"health\",
+              \"type\": [\"null\", \"float\"],
+              \"default\": null
+          },
+          {
+              \"name\": \"metrics\",
+              \"type\": {
+                  \"type\": \"map\",
+                  \"values\": \"string\"
+              }
+          },
+          {
+             \"name\":\"api_user\",
+             \"type\":[\"null\",\"string\"],
+             \"default\":null
+          },
+          {
+             \"name\":\"api_key_name\",
+             \"type\":[\"null\",\"string\"],
+             \"default\":null
+          }
+      ]
+  }",
+  "records": [
+    {
+      "value": {
+        "product_id": "ALM",
+        "customer_id": "acme",
+        "instance_id": "asd",
+        "metric_date": "2018-05-14",
+        "description": null,
+        "health": null,
+        "metrics": {
+          "foo": "bar"
+        },
+        "api_user": null,
+        "api_key_name": null
+      }
+    }
+  ]
+}
