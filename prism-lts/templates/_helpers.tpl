@@ -17,7 +17,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 
 {{- define "prism-lts.serviceHost" -}}
 {{- $service := default .Chart.Name .Values.s3ConnectorJob.config.name -}}
-{{- printf "%s.%s.svc.cluster.local" $service .Release.Namespace -}}
+{{- printf "%s.%s.svc.k8s" $service .Release.Namespace -}}
 {{- end -}}
 
 {{- define "prism-lts.stamp" -}}
