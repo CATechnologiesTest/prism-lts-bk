@@ -1,0 +1,33 @@
+#!/bin/bash -ex
+
+shhh() {
+    set +x
+    "$@"
+    set -x
+}
+
+try() {
+    set +e
+    "$@"
+    set -e
+}
+
+main() {
+    local git_sha="$(git rev-parse HEAD)"
+    local image_name="quay.io/stsatlas/prism-lts"
+    local job_image_name="quay.io/stsatlas/bash-curl"
+
+    docker build -t "$image_name:$git_sha" -t "$image_name:latest" .
+    docker build -t "$job_image_name:$git_sha" -t "$job_image_name:latest" -f DockerfileCurl .
+
+    set +x
+    shhh docker login -u="$QUAY_PLATFORM_DEPLOYER_USERNAME" -p="$QUAY_PLATFORM_DEPLOYER_TOKEN" quay.io
+    set -x
+
+    docker push "$image_name:$git_sha"
+    docker push "$image_name:latest"
+    docker push "$job_image_name:$git_sha"
+    docker push "$job_image_name:latest"
+}
+
+main "$@"

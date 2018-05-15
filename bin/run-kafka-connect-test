@@ -38,9 +38,11 @@ prep_s3() {
 }
 
 check_s3() {
-  local schema_name="$1"
-  local schema_version="1"
-  partition="source/schema=$schema_name/version=$schema_version"
+  local topic="$1"
+  local year="$2"
+  local month="$3"
+  local day="$4"
+  local partition="topics/$topic/year=$year/month=$month/day=$day"
   aws s3 ls "s3://$bucket_name/$partition/"
 }
 
@@ -122,6 +124,7 @@ exit_script() {
 }
 
 main () {
+  local git_sha="$(git rev-parse HEAD)"
   trap exit_script SIGHUP SIGINT SIGKILL SIGSTOP SIGTERM EXIT
   check_for_secret "aws-s3-creds" || set_aws_secret
   check_for_secret "quay-sts" || set_quay_secret
@@ -130,28 +133,31 @@ main () {
   helm dep update
   helm dep build
   helm upgrade --install test-prism-lts . \
-       --set "s3ConnectorJob.config.S3_BUCKET_NAME=$bucket_name" \
+       --set kafkaConnect.tag="$git_sha" \
+       --set s3ConnectorJob.tag="$git_sha" \
+       --set s3ConnectorJob.config.S3_BUCKET_NAME="$bucket_name" \
        --set tags.prism-lts-test-values=true \
        --wait --timeout 600 --debug
+
   repeat_and_sleep 'check_pod_is_ready prism-lts' "1"
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
   repeat_and_sleep 'check_jobs_are_done' "15" "120"
 
+  # AC User Event
+  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "ac-user-event"
+  repeat_and_sleep 'check_s3 ac-user-event 2018 01 04' "2" "80"
+
   # Site Modules
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-modules"
-  repeat_and_sleep 'check_s3 com.sts.SiteModule' "2" "80"
+  repeat_and_sleep 'check_s3 site-modules 2018 01 04' "2" "80"
 
   # Site Usage Metrics
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-usage-metrics"
-  repeat_and_sleep 'check_s3 com.sts.SiteHealthMetric' "2" "80"
-
-  # AC User Event
-  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "ac-user-event"
-  repeat_and_sleep 'check_s3 com.sts.user-event' "2" "80"
+  repeat_and_sleep 'check_s3 site-usage-metrics 2018 01 04' "2" "80"
 
   # Health Metrics
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "health-metrics"
-  repeat_and_sleep 'check_s3 com.sts.HealthMetric' "2" "80"
+  repeat_and_sleep 'check_s3 health-metrics 2018 01 04' "2" "80"
 
 }
 

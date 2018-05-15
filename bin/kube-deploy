@@ -5,7 +5,7 @@ namespace="prism"
 jumpgate_user_name="deploy-prism"
 helm_cmd_tiller_option="--tiller-namespace $namespace"
 helm_cmd_options="$helm_cmd_tiller_option --namespace $namespace"
-helm_set_vars="--set tags.prism-lts-$environment-values=true"
+helm_set_vars="--set tags.prism-lts-$environment-values=true --set kafkaConnect.tag=$(git rev-parse HEAD) --set s3ConnectorJob.tag=$(git rev-parse HEAD)"
 
 copy_to_jumpgate() {
     scp "$1" "$jumpgate_user_name@$environment-jumpgate-01.commonstack.io:"

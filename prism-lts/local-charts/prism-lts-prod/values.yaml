@@ -4,6 +4,7 @@ exports:
       heapOpts: "-Xms512m -Xmx1g"
       kafkaServers: "kafka-01:9092,kafka-02:9092,kafka-03:9092"
       connectKeyConverterSchemaRegistryUrl: "http://kafka-01:8081"
+      storageReplicationFactor: 3
       connectValueConverterSchemaRegistryUrl: "http://kafka-01:8081"
       s3SecretName: "prism-lts-s3-access"
       resources:
