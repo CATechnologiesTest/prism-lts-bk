@@ -15,11 +15,6 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "prism-lts.serviceHost" -}}
-{{- $service := default .Chart.Name .Values.s3ConnectorJob.config.name -}}
-{{- printf "%s.%s.svc.k8s" $service .Release.Namespace -}}
-{{- end -}}
-
 {{- define "prism-lts.stamp" -}}
 {{- $stamp := now | quote | sha256sum | trunc 6 -}}
 {{- printf "%s-%s" . $stamp -}}

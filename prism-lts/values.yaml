@@ -34,6 +34,7 @@ s3ConnectorJob:
     FLUSH_SIZE: 2
     ROTATE_INTERVAL: 5000
     S3_BUCKET_NAME: "local-prism-lts"
+    PRISM_LTS_HOST: "prism-lts"
 
 tags:
   prism-lts-local-values: false

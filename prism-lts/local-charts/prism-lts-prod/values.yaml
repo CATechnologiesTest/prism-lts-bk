@@ -18,6 +18,7 @@ exports:
         FLUSH_SIZE: 250
         ROTATE_INTERVAL: 15000
         S3_BUCKET_NAME: "prod-prism-lts"
+        PRISM_LTS_HOST: "prism-lts.prism.svc.k8s"
       resources:
         limits:
           cpu: "50m"

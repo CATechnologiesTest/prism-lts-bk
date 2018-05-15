@@ -26,8 +26,6 @@ spec:
         {{- include "prism-lts.config" .Values.s3ConnectorJob.config | indent 8 }}
         - name: CONNECTOR_TOPICS
           value: {{ join "," .Values.s3ConnectorJob.topics | quote }}
-        - name: PRISM_LTS_HOST
-          value: {{ template "prism-lts.serviceHost" $ }}
         {{- with .Values.s3ConnectorJob.resources}}
         resources:
 {{ toYaml . | indent 10 }}
