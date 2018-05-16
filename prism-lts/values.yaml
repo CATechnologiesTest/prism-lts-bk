@@ -5,13 +5,15 @@ kafkaConnect:
   replicaCount: 1
   s3SecretName: "aws-s3-creds"
   imageSecretName: "quay-sts"
-  image: "quay.io/stsatlas/schwartz-kafka-connect:5f13164d3889143d9044023852a5aa804b6f896b"
+  image: "quay.io/stsatlas/prism-lts"
+  tag: "latest"
   connectKeyConverterSchemaRegistryUrl: "http://local-schema-registry:8081"
   connectValueConverterSchemaRegistryUrl: "http://local-schema-registry:8081"
   connectInternalKeyConverter: "org.apache.kafka.connect.json.JsonConverter"
   connectInternalValueConverter: "org.apache.kafka.connect.json.JsonConverter"
   connectKeyConverter: "io.confluent.connect.avro.AvroConverter"
   connectValueConverter: "io.confluent.connect.avro.AvroConverter"
+  storageReplicationFactor: 1
 
 jmxExporter:
   resources: false
@@ -20,7 +22,7 @@ s3ConnectorJob:
   name: "s3-connector-job"
   imageSecretName: "quay-sts"
   image: "quay.io/stsatlas/bash-curl"
-  tag: "6835c10b66dda3df476d141403464424919b07f0"
+  tag: "latest"
   resources: false
   topics:
   - "health-metrics"

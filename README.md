@@ -15,7 +15,7 @@ Prism long term storage uses the AWS S3 connector for Kafka Connect to route dat
 
 ### Partitioning
 
-We are using a custom partition scheme forked from the Hellfish's team `RallySoftware/schwartz-kafka-connect` repo. This uses the `metric_date` field in each incoming Avro message to route these messages to a particular S3 bucket and file. Each S3 file contains a `flushSize` number of Avro records for that particular day. For instance, with a `metric_date` of `2018-01-04`, each record will be routed to a file in the bucket: `s3://prism-lts/topics/ac-user-event/year=2018/month=01/day=04/`. The flush size can be any number that is reasonable. We are starting with a flush size of 250 as a default value. This can be updated in `prism-lts/values.yaml`.
+We are using a custom partition scheme. The source is located in `/java`. This uses the `metric_date` field in each incoming Avro message to route these messages to a particular S3 bucket and file. Each S3 file contains a `flushSize` number of Avro records for that particular day. For instance, with a `metric_date` of `2018-01-04`, each record will be routed to a file in the bucket: `s3://prod-prism-lts/topics/ac-user-event/year=2018/month=01/day=04/`. The flush size can be any number that is reasonable. We are starting with a flush size of 250 as a default value. This can be updated in `prism-lts/values.yaml`.
 
 ## Local Development
 
@@ -58,26 +58,7 @@ Run `/bin/run-kafka-connect-test`.
 - view the logs with: `kubectl logs $(kubectl get po -o name -l app=prism-lts --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) -c prism-lts`
 - finally, run: `./bin/send_a_bunch_of_data <topic name> <desired num messages>` to send a bunch of messages onto the local kafka bus
 
-### Updating the Kafka Connect Docker Image
-
-- `eval $(minikube docker-env)` to change docker contexts to minikube
-- go to the [sts-atlas/schwartz-kafka-connect](https://github.com/sts-atlas/schwartz-kafka-connect) repo.
-- build the `sts-atlas/schwarz-kafka-connect` jar using `lein uberjar` in that repo.
-- copy the jar to the `prism-long-term-storage` repo.
-  - NOTE: ensure that the file is renamed to `schwartz-kafka-connect.jar`.
-- run `docker build . -t quay.io/stsatlas/schwartz-kafka-connect:<your git SHA> -f DockerfileSchwartzKafkaConnect` to build the docker image
-- use `docker push quay.io/stsatlas/schwarz-kafka-connect:<your git SHA>` to push the docker image
-- update `prism-lts/values.yaml`
-
-### Updating the Curl Docker Image (used by the kafka connect jobs)
-
-- `eval $(minikube docker-env)` to change docker contexts to minikube
-- `docker build . -f DockerfileCurl -t quay.io/stsatlas/bash-curl:<your git SHA>` to build the new docker image
-- `docker push quay.io/stsatlas/bash-curl:<your git SHA>` to push the docker image
-- update `prism-lts/values.yaml`
-
 ### Changing metadata labels or annotations
 If you change metadata labels or annotations, helm does not know that the previous release running in your minikube cluster is the same app.
 Delete your old release by running `helm delete <release_name> --purge`
 The `--purge` flag removes references that helm has to track your release.
-
