@@ -58,6 +58,7 @@ Run `/bin/run-kafka-connect-test`.
 - view the logs with: `kubectl logs $(kubectl get po -o name -l app=prism-lts --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) -c prism-lts`
 - finally, run: `./bin/send_a_bunch_of_data <topic name> <desired num messages>` to send a bunch of messages onto the local kafka bus
 
+
 ### Changing metadata labels or annotations
 If you change metadata labels or annotations, helm does not know that the previous release running in your minikube cluster is the same app.
 Delete your old release by running `helm delete <release_name> --purge`
