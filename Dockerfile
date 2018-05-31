@@ -6,5 +6,5 @@ RUN lein deps
 RUN lein test
 RUN lein jar
 
-FROM confluentinc/cp-kafka-connect:3.3.1
+FROM confluentinc/cp-kafka-connect:4.0.0
 COPY --from=builder /java/target/prism-kafka-connect.jar /usr/share/java/kafka-connect-s3/

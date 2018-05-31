@@ -94,6 +94,12 @@ spec:
           value: {{ .Values.kafkaConnect.connectValueConverterSchemaRegistryUrl | quote }}
         - name: CONNECT_REST_ADVERTISED_HOST_NAME
           value: {{ template "name" . }}
+        - name: CONNECT_OFFSET_STORAGE_PARTITIONS
+          value: {{ .Values.kafkaConnect.partitions | default "12" | quote }}
+        - name: CONNECT_STATUS_STORAGE_PARTITIONS
+          value: {{ .Values.kafkaConnect.partitions | default "12" | quote }}
+        - name: CONNECT_PLUGIN_PATH
+          value: "/usr/share/java,/usr/local/share/kafka/plugins"
         ports:
         - containerPort: 8083
           protocol: TCP
