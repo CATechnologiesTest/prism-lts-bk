@@ -44,6 +44,7 @@ import io.confluent.connect.storage.common.StorageCommonConfig;
 import io.confluent.connect.storage.errors.PartitionException;
 
 import io.confluent.connect.storage.common.StorageCommonConfig;
+import io.confluent.connect.storage.partitioner.PartitionerConfig;
 import io.confluent.connect.storage.partitioner.*;
 
 public class TimeBasedPartitioner<T> extends DefaultPartitioner<T> {
