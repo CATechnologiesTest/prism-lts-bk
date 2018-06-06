@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -44,14 +43,12 @@ import io.confluent.connect.storage.common.SchemaGenerator;
 import io.confluent.connect.storage.common.StorageCommonConfig;
 import io.confluent.connect.storage.errors.PartitionException;
 
+import io.confluent.connect.storage.common.StorageCommonConfig;
 import io.confluent.connect.storage.partitioner.*;
 
 public class TimeBasedPartitioner<T> extends DefaultPartitioner<T> {
   // Duration of a partition in milliseconds.
   private static final Logger log = LoggerFactory.getLogger(TimeBasedPartitioner.class);
-  private static final String SCHEMA_GENERATOR_CLASS =
-      "io.confluent.connect.storage.hive.schema.TimeBasedSchemaGenerator";
-
   private long partitionDurationMs;
   private String pathFormat;
   private DateTimeFormatter formatter;
@@ -69,6 +66,7 @@ public class TimeBasedPartitioner<T> extends DefaultPartitioner<T> {
     this.pathFormat = pathFormat;
     this.formatter = getDateTimeFormatter(pathFormat, timeZone).withLocale(locale);
     try {
+      partitionFields = newSchemaGenerator(config).newPartitionFields(pathFormat);
       timestampExtractor = newTimestampExtractor(
           (String) config.get(PartitionerConfig.TIMESTAMP_EXTRACTOR_CLASS_CONFIG));
       timestampExtractor.configure(config);
@@ -160,21 +158,15 @@ public class TimeBasedPartitioner<T> extends DefaultPartitioner<T> {
     DateTime bucket = new DateTime(
         getPartition(partitionDurationMs, timestamp, formatter.getZone())
     );
-    return bucket.toString(formatter);
+
+    String topicBasedPrefix = getTopicBasedPrefix(sinkRecord.topic());
+    return topicBasedPrefix + "/" + bucket.toString(formatter);
+
   }
 
   @Override
-  public List<T> partitionFields() {
-    if (partitionFields == null) {
-      partitionFields = newSchemaGenerator(config).newPartitionFields(pathFormat);
-    }
-    return partitionFields;
-  }
-
-  @Override
-  protected Class<? extends SchemaGenerator<T>> getSchemaGeneratorClass()
-      throws ClassNotFoundException {
-    return (Class<? extends SchemaGenerator<T>>) Class.forName(SCHEMA_GENERATOR_CLASS);
+  public String generatePartitionedPath(String topic, String encodedPartition) {
+    return encodedPartition;
   }
 
   @Override
@@ -182,10 +174,12 @@ public class TimeBasedPartitioner<T> extends DefaultPartitioner<T> {
   public SchemaGenerator<T> newSchemaGenerator(Map<String, Object> config) {
     Class<? extends SchemaGenerator<T>> generatorClass = null;
     try {
-      generatorClass = getSchemaGeneratorClass();
+      generatorClass =
+          (Class<? extends SchemaGenerator<T>>) config.get(
+              PartitionerConfig.SCHEMA_GENERATOR_CLASS_CONFIG
+          );
       return generatorClass.getConstructor(Map.class).newInstance(config);
     } catch (ClassCastException
-        | ClassNotFoundException
         | IllegalAccessException
         | InstantiationException
         | InvocationTargetException
@@ -246,6 +240,46 @@ public class TimeBasedPartitioner<T> extends DefaultPartitioner<T> {
     public Long extract(ConnectRecord<?> record) {
       return record.timestamp();
     }
+  }
+
+  private String getTopicBasedPrefix(String topic) {
+    if(topic.endsWith("spans")) {
+      return "spans";
+    }
+    else if(topic.endsWith("summary")) {
+      return "summaries";
+    }
+    return topic;
+  }
+
+  private String getServiceName(SinkRecord sinkRecord) {
+    Schema schema  = sinkRecord.valueSchema();
+    Struct record = (Struct) sinkRecord.value();
+    if(schema.field("requestSpan") != null) {
+      return ((Struct)record.get("requestSpan")).get("serviceName").toString();
+    } else if(schema.field("event") != null) {
+      return ((Struct)record.get("event")).get("serviceName").toString();
+    }  else if(schema.field("serviceName") != null) {
+      return record.get("serviceName").toString();
+    }
+    return "";
+  }
+
+  private String getStackName(SinkRecord sinkRecord){
+    Schema schema  = sinkRecord.valueSchema();
+    Struct record = (Struct) sinkRecord.value();
+    if (schema.field("requestSpan") != null) {
+      return ( ((Struct)record.get("requestSpan"))).get("stack").toString();
+    } else if (schema.field("event") != null) {
+      return ( ((Struct) record.get("event"))).get("stack").toString();
+    } else if (schema.field("stack") != null) {
+      return (record.get("stack")).toString();
+    }
+    return "";
+  }
+
+  private String formatModelName(String name) {
+    return name.replace('.', '-');
   }
 
   public static class RecordFieldTimestampExtractor implements TimestampExtractor {
