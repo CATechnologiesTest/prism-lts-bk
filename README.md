@@ -63,3 +63,5 @@ Run `/bin/run-kafka-connect-test`.
 If you change metadata labels or annotations, helm does not know that the previous release running in your minikube cluster is the same app.
 Delete your old release by running `helm delete <release_name> --purge`
 The `--purge` flag removes references that helm has to track your release.
+
+
