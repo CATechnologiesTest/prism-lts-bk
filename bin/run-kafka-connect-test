@@ -143,22 +143,20 @@ main () {
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
   repeat_and_sleep 'check_jobs_are_done' "15" "120"
 
-  # Send the Data
-  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "ac-user-event"
-  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-modules"
-  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-usage-metrics"
-  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "health-metrics"
-
   # AC User Event
+  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "ac-user-event"
   repeat_and_sleep 'check_s3 ac-user-event 2018 01 04' "2" "80"
 
   # Site Modules
+  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-modules"
   repeat_and_sleep 'check_s3 site-modules 2018 01 04' "2" "80"
 
   # Site Usage Metrics
+  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-usage-metrics"
   repeat_and_sleep 'check_s3 site-usage-metrics 2018 01 04' "2" "80"
 
   # Health Metrics
+  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "health-metrics"
   repeat_and_sleep 'check_s3 health-metrics 2018 01 04' "2" "80"
 
 }

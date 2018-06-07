@@ -5,10 +5,11 @@
   :repositories [["confluent" "http://packages.confluent.io/maven"]]
 
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.apache.kafka/connect-api "1.0.1" :exclusions [org.slf4j/slf4j-log4j12]]
-                 [io.confluent/kafka-connect-s3 "4.0.1" :exclusions [io.confluent/kafka-connect-storage-hive]]]
+                 [org.apache.kafka/connect-api "0.11.0.1" :exclusions [org.slf4j/slf4j-log4j12]]
+                 [io.confluent/kafka-connect-s3 "3.3.1" :exclusions[io.confluent/kafka-connect-storage-hive]]]
 
   :java-source-paths ["src/java/prism_kafka_connect"]
+
   :jar-name "prism-kafka-connect.jar"
   :uberjar-name "prism-kafka-connect-standalone.jar"
 
