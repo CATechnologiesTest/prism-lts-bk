@@ -63,11 +63,11 @@ spec:
         - name: CONNECT_GROUP_ID
           value: "s3-worker-group-02"
         - name: CONNECT_OFFSET_STORAGE_TOPIC
-          value: "connect-offsets"
+          value: "connect-offsets-02"
         - name: CONNECT_CONFIG_STORAGE_TOPIC
-          value: "connect-configs"
+          value: "connect-configs-02"
         - name: CONNECT_STATUS_STORAGE_TOPIC
-          value: "connect-status"
+          value: "connect-status-02"
         - name: CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR
           value: {{ .Values.kafkaConnect.storageReplicationFactor | quote }}
         - name: CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR
