@@ -15,17 +15,15 @@ check_pod_is_ready() {
   local app_name="$1"
   local namespace="${2:-default}"
   local jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
-
   local pod_conditions="$(kubectl get po -n "$namespace" -l app="$app_name" -o jsonpath="$jsonpath" 2>&1)"
   echo "$pod_conditions" | grep "Ready=True"
 }
 
 check_jobs_are_done() {
-  local job_name="$1"
-  local namespace="${2:-default}"
-  local jsonpath="{range @.items[*]}{@.status}{end}"
-  local job_conditions="$(kubectl get jobs -n "$namespace" -o jsonpath="$jsonpath")"
-  echo "$job_conditions" | grep "type:Complete status:True"
+  local job_name="$(kubectl get jobs --sort-by='{.metadata.creationTimestamp}' | tail -1 | grep s3-connector-job | awk '{ print $1 }')"
+  local jsonpath="{@.status}"
+  local job_conditions="$(kubectl get jobs $job_name -n default -o jsonpath=$jsonpath)"
+  echo "$job_conditions" | grep "type:Complete" | grep "status:True"
 }
 
 install_aws_cli() {
@@ -143,20 +141,22 @@ main () {
   repeat_and_sleep 'check_pod_is_ready local-kafka-rest' "1"
   repeat_and_sleep 'check_jobs_are_done' "15" "120"
 
-  # AC User Event
+  # Send the Data
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "ac-user-event"
+  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-modules"
+  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-usage-metrics"
+  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "health-metrics"
+
+  # AC User Event
   repeat_and_sleep 'check_s3 ac-user-event 2018 01 04' "2" "80"
 
   # Site Modules
-  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-modules"
   repeat_and_sleep 'check_s3 site-modules 2018 01 04' "2" "80"
 
   # Site Usage Metrics
-  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-usage-metrics"
   repeat_and_sleep 'check_s3 site-usage-metrics 2018 01 04' "2" "80"
 
   # Health Metrics
-  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "health-metrics"
   repeat_and_sleep 'check_s3 health-metrics 2018 01 04' "2" "80"
 
 }
