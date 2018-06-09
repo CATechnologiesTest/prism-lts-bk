@@ -6,7 +6,8 @@
 
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.apache.kafka/connect-api "1.0.1" :exclusions [org.slf4j/slf4j-log4j12]]
-                 [io.confluent/kafka-connect-s3 "4.0.1" :exclusions [io.confluent/kafka-connect-storage-hive]]]
+                 [io.confluent/kafka-connect-s3 "4.0.1" :exclusions [io.confluent/kafka-connect-storage-hive
+                                                                     org.apache/xerces]]]
 
   :java-source-paths ["src/java/prism_kafka_connect"]
   :jar-name "prism-kafka-connect.jar"
