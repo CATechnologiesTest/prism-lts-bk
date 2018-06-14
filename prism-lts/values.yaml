@@ -32,7 +32,6 @@ s3ConnectorJob:
   - "site-usage-metrics"
   - "sites"
   - "site-usage-interval-metrics"
-  - "test-sites"
   config:
     CONNECTOR_NAME: "s3-connector"
     FLUSH_SIZE: 2
