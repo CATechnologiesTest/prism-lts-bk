@@ -10,10 +10,10 @@ exports:
       resources:
         limits:
           cpu: "200m"
-          memory: "2.75Gi"
+          memory: "3Gi"
         requests:
           cpu: "200m"
-          memory: "2.75Gi"
+          memory: "3Gi"
     s3ConnectorJob:
       config:
         FLUSH_SIZE: 250
