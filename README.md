@@ -59,6 +59,7 @@ If you change the java source code for partitioners, make sure to build a jar, n
 1. Build the docker image `docker build -t quay.io/stsatlas/prism-lts:my-new-change . ` (No need to push the image up to quay.io)
 1. Upgrade the release - update the `release_name` and tag name
 `helm upgrade --install <release_name> ./prism-lts --set tags.prism-lts-local-values=true --set kafkaConnect.tag=my-new-change`
+1. Then use `./bin/send_a_bunch_of_data <topic_name>` to send messages to kafka and test the flow
 
 
 
