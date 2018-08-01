@@ -49,9 +49,19 @@ If you update any environment specific values or the local kafka chart, you will
 - Your first run will use the command: `helm install --replace --name=<release name> ./prism-lts --set tags.prism-lts-local-values=true`
 - After the first run, use the command: `helm upgrade --install <release_name> ./prism-lts --set tags.prism-lts-local-values=true`
 
-### Testing Prism-lts
 
-Run `/bin/run-kafka-connect-test`.
+### Changing java code
+If you change the java source code for partitioners, make sure to build a jar, new image and tag appropriately to use the new image. 
+
+1. Build the Jar under `java` directory using `lein jar`
+1. Make sure your docker context is pointing at minikube. `eval $(minikube docker-env)`
+1. Make sure you are logged into `quay.io` on minikube. If not already logged in, you can use  `docker login quay.io` to login.
+1. Build the docker image `docker build -t quay.io/stsatlas/prism-lts:my-new-change . ` (No need to push the image up to quay.io)
+1. Upgrade the release - update the `release_name` and tag name
+`helm upgrade --install <release_name> ./prism-lts --set tags.prism-lts-local-values=true --set kafkaConnect.tag=my-new-change`
+
+
+
 
 ### To Send Data to the REST Proxy
 - setup port forwarding for the local kafka rest proxy: `kubectl port-forward $(kubectl get po -o name -l app=local-kafka-rest --sort-by='.metadata.creationTimestamp' | cut -d \/ -f 2 | tail -n 1) 8082:8082`
