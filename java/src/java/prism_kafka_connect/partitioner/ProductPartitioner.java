@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
 import io.confluent.connect.storage.common.SchemaGenerator;
 import io.confluent.connect.storage.common.StorageCommonConfig;
@@ -47,9 +48,22 @@ public class ProductPartitioner<T> extends DefaultPartitioner<T> {
   @SuppressWarnings("unchecked")
   @Override
   public void configure(Map<String, Object> config) {
-    fieldNamesSites = (List<String>) config.get("partition.sites.field.name");
-    fieldNamesSaas = (List<String>) config.get("partition.saas.field.name");
-    fieldNamesUserEvents = (List<String>) config.get("partition.userevent.field.name");
+    fieldNamesSites = new ArrayList<String>();
+    fieldNamesSites.add("customer_id");
+    fieldNamesSites.add("product_id");
+    fieldNamesSites.add("instance_id");
+    fieldNamesSites.add("metric_date");
+
+    fieldNamesSaas = new ArrayList<String>();
+    fieldNamesSaas.add("product_instance_id");
+    fieldNamesSaas.add("product_id");
+    fieldNamesSaas.add("metric_date");
+
+    fieldNamesUserEvents = new ArrayList<String>();
+    fieldNamesUserEvents.add("user_oid");
+    fieldNamesUserEvents.add("product_id");
+    fieldNamesUserEvents.add("metric_date");
+
     delim = (String) config.get(StorageCommonConfig.DIRECTORY_DELIM_CONFIG);
   }
 //method to check if field has anothername in the schema
@@ -144,10 +158,10 @@ public class ProductPartitioner<T> extends DefaultPartitioner<T> {
     }
 
     public List<String> whichFieldNames(Struct value, Schema valueSchema) {
-        if(valueSchema.name().equals("saas-usage-metrics")||valueSchema.name().equals("health-metrics")){
+        if(valueSchema.name().equals("com.sts.SaasUsageMetrics") || valueSchema.name().equals("com.sts.HealthMetric")){
             return fieldNamesSaas;
         }
-        else if(valueSchema.name().equals("ac-user-event")) {
+        else if(valueSchema.name().equals("com.sts.user_event")) {
             return fieldNamesUserEvents;
         }
         else
