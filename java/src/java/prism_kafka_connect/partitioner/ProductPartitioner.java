@@ -36,14 +36,12 @@ import io.confluent.connect.storage.common.SchemaGenerator;
 import io.confluent.connect.storage.common.StorageCommonConfig;
 import io.confluent.connect.storage.errors.PartitionException;
 
-//customerid/productid/productinstanceid/metric-date
 public class ProductPartitioner<T> extends DefaultPartitioner<T> {
   protected static final Logger log = LoggerFactory.getLogger(FieldPartitioner.class);
-  //for saas and health
-  protected List<String> fieldNamesSites;//create get method
-    //for site based
-    protected List<String> fieldNamesSaas;//create get method
-    protected List<String> fieldNamesUserEvents;
+
+  protected List<String> fieldNamesSites;
+  protected List<String> fieldNamesSaas;
+  protected List<String> fieldNamesUserEvents;
 
   @SuppressWarnings("unchecked")
   @Override
@@ -66,35 +64,6 @@ public class ProductPartitioner<T> extends DefaultPartitioner<T> {
 
     delim = (String) config.get(StorageCommonConfig.DIRECTORY_DELIM_CONFIG);
   }
-//method to check if field has anothername in the schema
- /* public String checkForAlias(String fieldName, Struct value) {
-        if(fieldName.equals("customer_id")) {//could either be user_id or customer_id
-            if(value.get("customer_id")!=null)
-                return "customer_id";
-            else if(value.get("user_id")!=null)
-                return "user_id";
-            else if(value.get("user_oid")!=null)
-                return "user_oid";
-            else {
-                return null;
-
-            }
-        }
-        if(fieldName.equals("product_instance_id")) {//must be instance_id
-            if(value.get("product_instance_id") != null)
-                return "product_instance_id";
-            else if(value.get("instance_id") != null)
-                return "instance_id";
-            else
-                return null;
-        }
-        else
-            return null;
-
-  }
-*/
-
-  //method to partition metric_date
 
   @Override
   public String encodePartition(SinkRecord sinkRecord) {
@@ -113,11 +82,6 @@ public class ProductPartitioner<T> extends DefaultPartitioner<T> {
                 }
 
                 Object partitionKey = struct.get(fieldName);
-                /*if(partitionKey == null) {
-                    fieldName = checkForAlias(fieldName,struct);
-                    partitionKey = struct.get(fieldName);
-
-                }*/
                 Type type = valueSchema.field(fieldName).schema().type();
                 switch (type) {
                     case INT8:
