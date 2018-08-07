@@ -1,3 +1,20 @@
+/*
+ *
+ * The following class partitions an s3 bucket into fields.
+ * Different topics have different partitioning schemes.
+ *
+ * For the saas-usage metrics and the health-metrics, the partitioning scheme is:
+ * product_instance_id,product_id,metric_date
+ *
+ * For any site-based metrics, the partitioning scheme is:
+ * customer_id,product_id,instance_id,metric_date
+ *
+ * For the ac-user-event, the temporary partitioning scheme is:
+ * user_oid,product_id,metric_date
+ *
+ *
+ *
+ */
 package prism_kafka_connect.partitioner;
 
 import org.apache.kafka.common.config.ConfigException;
@@ -36,15 +53,23 @@ import io.confluent.connect.storage.common.SchemaGenerator;
 import io.confluent.connect.storage.common.StorageCommonConfig;
 import io.confluent.connect.storage.errors.PartitionException;
 
-//customerid/productid/productinstanceid/metric-date
+
 public class ProductPartitioner<T> extends DefaultPartitioner<T> {
   protected static final Logger log = LoggerFactory.getLogger(FieldPartitioner.class);
-  //for saas and health
-  protected List<String> fieldNamesSites;//create get method
-    //for site based
-    protected List<String> fieldNamesSaas;//create get method
-    protected List<String> fieldNamesUserEvents;
+  protected List<String> fieldNamesSites;
+  protected List<String> fieldNamesUserEvents;
+  protected List<String> fieldNamesSaas;
 
+
+  /*
+   * Overriding DefaultPartitioner's configure method, ProductPartitioner's configure method
+   * sets the global fields fieldNamesSites, fieldNamesSaas and fieldNamesUserEvents to the strings
+   * that map to each of these variables in the payload.json
+   *
+   * delim is set to delimiter, ","
+   *
+   * @param: Map<String, Object> config
+   */
   @SuppressWarnings("unchecked")
   @Override
   public void configure(Map<String, Object> config) {
@@ -66,36 +91,21 @@ public class ProductPartitioner<T> extends DefaultPartitioner<T> {
 
     delim = (String) config.get(StorageCommonConfig.DIRECTORY_DELIM_CONFIG);
   }
-//method to check if field has anothername in the schema
- /* public String checkForAlias(String fieldName, Struct value) {
-        if(fieldName.equals("customer_id")) {//could either be user_id or customer_id
-            if(value.get("customer_id")!=null)
-                return "customer_id";
-            else if(value.get("user_id")!=null)
-                return "user_id";
-            else if(value.get("user_oid")!=null)
-                return "user_oid";
-            else {
-                return null;
 
-            }
-        }
-        if(fieldName.equals("product_instance_id")) {//must be instance_id
-            if(value.get("product_instance_id") != null)
-                return "product_instance_id";
-            else if(value.get("instance_id") != null)
-                return "instance_id";
-            else
-                return null;
-        }
-        else
-            return null;
-
-  }
-*/
-
-  //method to partition metric_date
-
+  /*
+   * Overriding DefaultPartitioner's encodePartition method, ProductPartitioner's encodePartition
+   * first checks to see if sinkRecord.value() is a Struct.
+   * If it is, a String list schemaFieldNames gets the list of field names corresponding with the schema
+   * the sinkRecord has.
+   * These fields are then traversed, and after finding the type of each field value, are casted to a string and appended
+   * to a StringBuilder.
+   * metric-date, a field that appears in every topic, is further divided into year month and day.
+   *
+   * @param: SinkRecord sinkRecord
+   * @return: String
+   * @throw: PartitionException
+   *
+   */
   @Override
   public String encodePartition(SinkRecord sinkRecord) {
         Object value = sinkRecord.value();
@@ -113,11 +123,7 @@ public class ProductPartitioner<T> extends DefaultPartitioner<T> {
                 }
 
                 Object partitionKey = struct.get(fieldName);
-                /*if(partitionKey == null) {
-                    fieldName = checkForAlias(fieldName,struct);
-                    partitionKey = struct.get(fieldName);
 
-                }*/
                 Type type = valueSchema.field(fieldName).schema().type();
                 switch (type) {
                     case INT8:
@@ -157,6 +163,14 @@ public class ProductPartitioner<T> extends DefaultPartitioner<T> {
         }
     }
 
+    /*
+     * Called by encodePartition when checking the valueSchema() of the sinkRecord.
+     * whichFieldNames check the name of the valueSchema, and return the corresponding list of fields.
+     *
+     * @param: Struct value, Schema valueSchema
+     * @return: List<String>
+     *
+     */
     public List<String> whichFieldNames(Struct value, Schema valueSchema) {
         if(valueSchema.name().equals("com.sts.SaasUsageMetrics") || valueSchema.name().equals("com.sts.HealthMetric")){
             return fieldNamesSaas;
@@ -164,8 +178,12 @@ public class ProductPartitioner<T> extends DefaultPartitioner<T> {
         else if(valueSchema.name().equals("com.sts.user_event")) {
             return fieldNamesUserEvents;
         }
-        else
+        else if(valueSchema.name().substring(8,12).toLowerCase().equals("site"))
             return fieldNamesSites;
+        else {
+            log.error("topic name not recognized.");
+            throw new PartitionException("Error encoding partition.");
+        }
 
     }
 }
