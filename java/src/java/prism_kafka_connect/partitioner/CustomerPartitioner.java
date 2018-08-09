@@ -9,9 +9,11 @@
  * For any site-based metrics, the partitioning scheme is:
  * customer_id,product_id,instance_id,metric_date
  *
- * For the ac-user-event, the temporary partitioning scheme is:
+ * For the ac-user-event, the partitioning scheme is:
  * user_oid,product_id,metric_date
  *
+ * For other defaults, scheme is:
+ * metric_date
  *
  *
  */
@@ -20,7 +22,6 @@ package prism_kafka_connect.partitioner;
 import org.apache.kafka.common.config.ConfigException;
 import org.joda.time.DateTimeZone;
 
-import io.confluent.connect.storage.partitioner.TimestampExtractor;
 import io.confluent.connect.storage.partitioner.*;
 import org.apache.kafka.connect.connector.ConnectRecord;
 import org.apache.kafka.connect.source.SourceRecord;
@@ -38,7 +39,6 @@ import org.apache.avro.generic.GenericRecord;
 
 import org.apache.kafka.common.config.ConfigException;
 import org.apache.kafka.common.utils.Time;
-import org.apache.kafka.connect.data.Timestamp;
 import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.slf4j.Logger;
@@ -72,11 +72,11 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
 
 
   /*
-   * Overriding DefaultPartitioner's configure method, CustomerPartitioner's configure method
-   * sets the global fields fieldNamesSites, fieldNamesSaas and fieldNamesUserEvents to the strings
+   * Overriding DefaultPartitioner's configure method
+   * initializes the global fields fieldNamesSites, fieldNamesSaas, fieldNamesUserEvents and fieldNamesDefault to the strings
    * that map to each of the respective topics.
    *
-   * delim is set to delimiter, ","
+   * dierectory delim is set to delimiter, "/"
    *
    * @param: Map<String, Object> config
    */
@@ -106,10 +106,9 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
   }
 
   /*
-   * Overriding DefaultPartitioner's encodePartition method, CustomerPartitioner's encodePartition
+   * Overriding DefaultPartitioner's encodePartition method
    * first checks to see if sinkRecord.value() is a Struct.
-   * If it is, a String list schemaFieldNames gets the list of field names corresponding with the schema
-   * the sinkRecord has.
+   * If it is, a String list schemaFieldNames gets the list of field names corresponding with the schema the sinkRecord has.
    * These fields are then traversed, and after finding the type of each field value, are casted to a string and appended
    * to a StringBuilder.
    * metric-date, a field that appears in every topic, is further divided into year month and day.
@@ -150,9 +149,9 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
                         String strRecord = (String) partitionKey;
                         if(fieldName.equals(METRIC_DATE)){
                             builder.append("year" + "=" + (strRecord.substring(0,4)))
-                                .append("/")
+                                .append(delim)
                                 .append("month" + "=" + (strRecord.substring(5,7)))
-                                .append("/")
+                                .append(delim)
                                 .append("day" + "=" + (strRecord.substring(8,10)));
                         }
                         else {
@@ -182,7 +181,6 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
      *
      * @param: Struct value, Schema valueSchema
      * @return: List<String>
-     * @throw: PartitionException
      *
      */
     public List<String> whichFieldNames(Struct value, Schema valueSchema) {

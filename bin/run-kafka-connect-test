@@ -144,7 +144,7 @@ aws_secret_access_key = '"$AWS_SECRET_ACCESS_KEY" > "$HOME/.aws/credentials"
 exit_script() {
   exit_code="$?"
   #NOTE: comment the next line to not clean up s3 buckets during test
-  #clean_up_s3
+  clean_up_s3
   set +x
   if [ "$exit_code" = 0 ]; then
       echo "!!!!!!!   TEST PASSED    !!!!!!!"
