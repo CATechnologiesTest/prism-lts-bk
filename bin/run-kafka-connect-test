@@ -51,7 +51,7 @@ check_s3_user_event() {
   local year="$4"
   local month="$5"
   local day="$6"
-  local partition="topics/$topic/user_oid=$user_oid/product_id=$product-id/year=$year/month=$month/day=$day"
+  local partition="topics/$topic/user_oid=$user_oid/product_id=$product_id/year=$year/month=$month/day=$day"
   aws s3 ls "s3://$bucket_name/$partition/"
 }
 
@@ -63,7 +63,7 @@ check_s3_sites() {
   local year="$5"
   local month="$6"
   local day="$7"
-  local partition="topics/$topic/customer_id=$customer_id/product_id=$product-id/instance_id=$instance_id/year=$year/month=$month/day=$day"
+  local partition="topics/$topic/customer_id=$customer_id/product_id=$product_id/instance_id=$instance_id/year=$year/month=$month/day=$day"
   aws s3 ls "s3://$bucket_name/$partition/"
 }
 
@@ -74,9 +74,9 @@ check_s3_health_metrics() {
   local year="$4"
   local month="$5"
   local day="$6"
-  local partition="topics/$topic/product_instance_id=$product_instance_id/product_id=$product-id/year=$year/month=$month/day=$day"
+  local partition="topics/$topic/product_instance_id=$product_instance_id/product_id=$product_id/year=$year/month=$month/day=$day"
   aws s3 ls "s3://$bucket_name/$partition/"
-
+}
 
 clean_up_s3() {
   aws s3 rb "s3://$bucket_name" --force
@@ -182,16 +182,16 @@ main () {
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "health-metrics"
 
   # AC User Event
-  repeat_and_sleep 'check_s3_user_event ac-user-event "someothergreatinfo" "wakawakawaka" 2018 01 04' "2" "80"
+  repeat_and_sleep 'check_s3_user_event ac-user-event someothergreatinfo wakawakawaka 2018 01 04' "2" "80"
 
   # Site Modules
-  repeat_and_sleep 'check_s3_sites site-modules "acme" "ALM" "asd" 2018 01 04' "2" "80"
+  repeat_and_sleep 'check_s3_sites site-modules acme ALM asd 2018 01 04' "2" "80"
 
   # Site Usage Metrics
-  repeat_and_sleep 'check_s3_sites site-usage-metrics "acme" "ALM" "asd" 2018 01 04' "2" "80"
+  repeat_and_sleep 'check_s3_sites site-usage-metrics acme ALM asd 2018 01 04' "2" "80"
 
   # Health Metrics
-  repeat_and_sleep 'check_s3_health_metrics health-metrics "125524" "ALM" 2018 01 04' "2" "80"
+  repeat_and_sleep 'check_s3_health_metrics health-metrics 125524 ALM 2018 01 04' "2" "80"
 
 }
 
