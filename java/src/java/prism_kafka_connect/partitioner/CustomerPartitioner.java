@@ -58,6 +58,13 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
   protected static final Logger log = LoggerFactory.getLogger(DefaultPartitioner.class);
   protected static final String healthMetricName = "com.sts.HealthMetric";
   protected static final String userEventName = "com.sts.user_event";
+  protected static final String CUSTOMER_ID = "customer_id";
+  protected static final String PRODUCT_ID = "product_id";
+  protected static final String INSTANCE_ID = "instance_id";
+  protected static final String PRODUCT_INSTANCE_ID = "product_instance_id";
+  protected static final String USER_OID = "user_oid";
+  protected static final String METRIC_DATE = "metric_date";
+
   protected List<String> fieldNamesSites;
   protected List<String> fieldNamesUserEvents;
   protected List<String> fieldNamesSaas;
@@ -77,23 +84,23 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
   @Override
   public void configure(Map<String, Object> config) {
     fieldNamesSites = new ArrayList<String>();
-    fieldNamesSites.add("customer_id");
-    fieldNamesSites.add("product_id");
-    fieldNamesSites.add("instance_id");
-    fieldNamesSites.add("metric_date");
+    fieldNamesSites.add(CUSTOMER_ID);
+    fieldNamesSites.add(PRODUCT_ID);
+    fieldNamesSites.add(INSTANCE_ID);
+    fieldNamesSites.add(METRIC_DATE);
 
     fieldNamesSaas = new ArrayList<String>();
-    fieldNamesSaas.add("product_instance_id");
-    fieldNamesSaas.add("product_id");
-    fieldNamesSaas.add("metric_date");
+    fieldNamesSaas.add(PRODUCT_INSTANCE_ID);
+    fieldNamesSaas.add(PRODUCT_ID);
+    fieldNamesSaas.add(METRIC_DATE);
 
     fieldNamesUserEvents = new ArrayList<String>();
-    fieldNamesUserEvents.add("user_oid");
-    fieldNamesUserEvents.add("product_id");
-    fieldNamesUserEvents.add("metric_date");
+    fieldNamesUserEvents.add(USER_OID);
+    fieldNamesUserEvents.add(PRODUCT_ID);
+    fieldNamesUserEvents.add(METRIC_DATE);
 
     fieldNamesDefault = new ArrayList<String>();
-    fieldNamesUserEvents.add("metric_date");
+    fieldNamesDefault.add(METRIC_DATE);
 
     delim = (String) config.get(StorageCommonConfig.DIRECTORY_DELIM_CONFIG);
   }
@@ -141,7 +148,7 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
                         break;
                     case STRING:
                         String strRecord = (String) partitionKey;
-                        if(fieldName.equals("metric_date")){
+                        if(fieldName.equals(METRIC_DATE)){
                             builder.append("year" + "=" + (strRecord.substring(0,4)))
                                 .append("/")
                                 .append("month" + "=" + (strRecord.substring(5,7)))
@@ -184,7 +191,7 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
         }
         else if(valueSchema.name().equals(userEventName)) {
             return fieldNamesUserEvents;
-        } else if(valueSchema.field("customer_id")!=null && valueSchema.field("product_id")!=null && valueSchema.field("instance_id")!=null) {
+        } else if(valueSchema.field(CUSTOMER_ID)!=null && valueSchema.field(PRODUCT_ID)!=null && valueSchema.field(INSTANCE_ID)!=null) {
             return fieldNamesSites;
         } else {
             return fieldNamesDefault;
