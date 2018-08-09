@@ -55,7 +55,7 @@ import io.confluent.connect.storage.errors.PartitionException;
 
 
 public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
-  protected static final Logger log = LoggerFactory.getLogger(FieldPartitioner.class);
+  protected static final Logger log = LoggerFactory.getLogger(DefaultPartitioner.class);
   protected static final String healthMetricName = "com.sts.HealthMetric";
   protected static final String userEventName = "com.sts.user_event";
   protected List<String> fieldNamesSites;
@@ -181,9 +181,7 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
         else if(valueSchema.name().equals(userEventName)) {
             return fieldNamesUserEvents;
         }
-        else if(valueSchema.name().substring(8,12).toLowerCase().equals("site") && valueSchema.field("customer_id") != null && valueSchema.field("product_id") != null)
-            return fieldNamesSites;
-        else if(valueSchema.field("customer_id") != null && valueSchema.field("product_id") != null)
+        else if(valueSchema.field("customer_id")!=null && valueSchema.field("product_id")!=null)
             return fieldNamesSites;
         else {
             log.error("topic name not recognized.");
