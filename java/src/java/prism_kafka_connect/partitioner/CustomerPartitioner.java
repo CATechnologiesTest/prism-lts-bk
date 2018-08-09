@@ -61,10 +61,11 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
   protected List<String> fieldNamesSites;
   protected List<String> fieldNamesUserEvents;
   protected List<String> fieldNamesSaas;
+  protected List<String> fieldNamesDefault;
 
 
   /*
-   * Overriding DefaultPartitioner's configure method, ProductPartitioner's configure method
+   * Overriding DefaultPartitioner's configure method, CustomerPartitioner's configure method
    * sets the global fields fieldNamesSites, fieldNamesSaas and fieldNamesUserEvents to the strings
    * that map to each of the respective topics.
    *
@@ -91,11 +92,14 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
     fieldNamesUserEvents.add("product_id");
     fieldNamesUserEvents.add("metric_date");
 
+    fieldNamesDefault = new ArrayList<String>();
+    fieldNamesUserEvents.add("metric_date");
+
     delim = (String) config.get(StorageCommonConfig.DIRECTORY_DELIM_CONFIG);
   }
 
   /*
-   * Overriding DefaultPartitioner's encodePartition method, ProductPartitioner's encodePartition
+   * Overriding DefaultPartitioner's encodePartition method, CustomerPartitioner's encodePartition
    * first checks to see if sinkRecord.value() is a Struct.
    * If it is, a String list schemaFieldNames gets the list of field names corresponding with the schema
    * the sinkRecord has.
@@ -180,12 +184,10 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
         }
         else if(valueSchema.name().equals(userEventName)) {
             return fieldNamesUserEvents;
-        }
-        else if(valueSchema.field("customer_id")!=null && valueSchema.field("product_id")!=null)
+        } else if(valueSchema.field("customer_id")!=null && valueSchema.field("product_id")!=null && valueSchema.field("instance_id")!=null) {
             return fieldNamesSites;
-        else {
-            log.error("topic name not recognized.");
-            throw new PartitionException("Error encoding partition.");
+        } else {
+            return fieldNamesDefault;
         }
 
     }
