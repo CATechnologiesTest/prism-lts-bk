@@ -53,6 +53,7 @@ import io.confluent.connect.storage.common.SchemaGenerator;
 import io.confluent.connect.storage.common.StorageCommonConfig;
 import io.confluent.connect.storage.errors.PartitionException;
 
+<<<<<<< HEAD
 
 public class ProductPartitioner<T> extends DefaultPartitioner<T> {
   protected static final Logger log = LoggerFactory.getLogger(FieldPartitioner.class);
@@ -70,6 +71,15 @@ public class ProductPartitioner<T> extends DefaultPartitioner<T> {
    *
    * @param: Map<String, Object> config
    */
+=======
+public class ProductPartitioner<T> extends DefaultPartitioner<T> {
+  protected static final Logger log = LoggerFactory.getLogger(FieldPartitioner.class);
+
+  protected List<String> fieldNamesSites;
+  protected List<String> fieldNamesSaas;
+  protected List<String> fieldNamesUserEvents;
+
+>>>>>>> 8abb358cf3b4698646891867bb7f71018d6230c6
   @SuppressWarnings("unchecked")
   @Override
   public void configure(Map<String, Object> config) {
@@ -123,7 +133,10 @@ public class ProductPartitioner<T> extends DefaultPartitioner<T> {
                 }
 
                 Object partitionKey = struct.get(fieldName);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8abb358cf3b4698646891867bb7f71018d6230c6
                 Type type = valueSchema.field(fieldName).schema().type();
                 switch (type) {
                     case INT8:
