@@ -56,20 +56,13 @@ import io.confluent.connect.storage.errors.PartitionException;
 
 public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
   protected static final Logger log = LoggerFactory.getLogger(DefaultPartitioner.class);
-  protected static final String healthMetricName = "com.sts.HealthMetric";
-  protected static final String userEventName = "com.sts.user_event";
   protected static final String CUSTOMER_ID = "customer_id";
   protected static final String PRODUCT_ID = "product_id";
   protected static final String INSTANCE_ID = "instance_id";
   protected static final String PRODUCT_INSTANCE_ID = "product_instance_id";
   protected static final String USER_OID = "user_oid";
+  protected static final String USER_SUBSCRIPTION_ID = "user_subscription_id";
   protected static final String METRIC_DATE = "metric_date";
-
-  protected List<String> fieldNamesSites;
-  protected List<String> fieldNamesUserEvents;
-  protected List<String> fieldNamesSaas;
-  protected List<String> fieldNamesDefault;
-
 
   /*
    * Overriding DefaultPartitioner's configure method
@@ -83,25 +76,6 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
   @SuppressWarnings("unchecked")
   @Override
   public void configure(Map<String, Object> config) {
-    fieldNamesSites = new ArrayList<String>();
-    fieldNamesSites.add(CUSTOMER_ID);
-    fieldNamesSites.add(PRODUCT_ID);
-    fieldNamesSites.add(INSTANCE_ID);
-    fieldNamesSites.add(METRIC_DATE);
-
-    fieldNamesSaas = new ArrayList<String>();
-    fieldNamesSaas.add(PRODUCT_INSTANCE_ID);
-    fieldNamesSaas.add(PRODUCT_ID);
-    fieldNamesSaas.add(METRIC_DATE);
-
-    fieldNamesUserEvents = new ArrayList<String>();
-    fieldNamesUserEvents.add(USER_OID);
-    fieldNamesUserEvents.add(PRODUCT_ID);
-    fieldNamesUserEvents.add(METRIC_DATE);
-
-    fieldNamesDefault = new ArrayList<String>();
-    fieldNamesDefault.add(METRIC_DATE);
-
     delim = (String) config.get(StorageCommonConfig.DIRECTORY_DELIM_CONFIG);
   }
 
@@ -153,8 +127,7 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
                                 .append("month" + "=" + (strRecord.substring(5,7)))
                                 .append(delim)
                                 .append("day" + "=" + (strRecord.substring(8,10)));
-                        }
-                        else {
+                        } else {
                             builder.append(fieldName + "=" + (String) partitionKey);
                         }
 
@@ -177,23 +150,40 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
 
     /*
      * Called by encodePartition when checking the valueSchema() of the sinkRecord.
-     * whichFieldNames check the name of the valueSchema, and return the corresponding list of fields.
+     * whichFieldNames check the availability of certain fields in the valueSchema, and return the corresponding list of fields.
      *
      * @param: Struct value, Schema valueSchema
      * @return: List<String>
      *
      */
     public List<String> whichFieldNames(Struct value, Schema valueSchema) {
-        if(valueSchema.name().equals(healthMetricName)){
-            return fieldNamesSaas;
-        }
-        else if(valueSchema.name().equals(userEventName)) {
-            return fieldNamesUserEvents;
-        } else if(valueSchema.field(CUSTOMER_ID)!=null && valueSchema.field(PRODUCT_ID)!=null && valueSchema.field(INSTANCE_ID)!=null) {
-            return fieldNamesSites;
-        } else {
-            return fieldNamesDefault;
+        List<String> fieldNames = new ArrayList<String>();
+        // Add customer_id (on-prem) or product_instance_id (for SaaS)
+        if(valueSchema.field(CUSTOMER_ID)!=null) {
+            fieldNames.add(CUSTOMER_ID);
+        } else if(valueSchema.field(PRODUCT_INSTANCE_ID) != null) {
+            fieldNames.add(PRODUCT_INSTANCE_ID);
         }
 
+        //Add product_id - this is mandatory
+        fieldNames.add(PRODUCT_ID);
+
+        //Add instance_id - this is related to a site for on-prem
+        if(valueSchema.field(INSTANCE_ID)!=null) {
+            fieldNames.add(INSTANCE_ID);
+        }
+
+        // Add user_subscription_id for SaaS
+        //user_oid is used only for ac_user_event which is a special case we are handling now
+        if(valueSchema.field(USER_SUBSCRIPTION_ID)!=null) {
+            fieldNames.add(USER_SUBSCRIPTION_ID);
+        } else if(valueSchema.field(USER_OID) != null) {
+            fieldNames.add(USER_OID);
+        }
+
+        // Add metric_date - this is mandatory
+        fieldNames.add(METRIC_DATE);
+
+        return fieldNames;
     }
 }
