@@ -19,40 +19,22 @@
  */
 package prism_kafka_connect.partitioner;
 
-import org.apache.kafka.common.config.ConfigException;
-import org.joda.time.DateTimeZone;
-
 import io.confluent.connect.storage.partitioner.*;
-import org.apache.kafka.connect.connector.ConnectRecord;
-import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.Schema.Type;
-
-import java.util.Map;
-
-
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.avro.generic.GenericRecord;
-
-import org.apache.kafka.common.config.ConfigException;
-import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.sink.SinkRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-
-import io.confluent.connect.storage.common.SchemaGenerator;
 import io.confluent.connect.storage.common.StorageCommonConfig;
 import io.confluent.connect.storage.errors.PartitionException;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
   protected static final Logger log = LoggerFactory.getLogger(DefaultPartitioner.class);

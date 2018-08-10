@@ -51,7 +51,7 @@ check_s3_user_event() {
   local year="$4"
   local month="$5"
   local day="$6"
-  local partition="topics/$topic/user_oid=$user_oid/product_id=$product_id/year=$year/month=$month/day=$day"
+  local partition="topics/$topic/product_id=$product_id/user_oid=$user_oid/year=$year/month=$month/day=$day"
   aws s3 ls "s3://$bucket_name/$partition/"
 }
 
