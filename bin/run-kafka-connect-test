@@ -49,9 +49,9 @@ check_s3_user_event() {
   local product_instance_id="$2"
   local product_id="$3"
   local user_oid="$4"
-  local year="$4"
-  local month="$5"
-  local day="$6"
+  local year="$5"
+  local month="$6"
+  local day="$7"
   local partition="topics/$topic/product_instance_id=$product_instance_id/product_id=$product_id/user_oid=$user_oid/year=$year/month=$month/day=$day"
   aws s3 ls "s3://$bucket_name/$partition/"
 }
@@ -166,8 +166,8 @@ main () {
   helm dep update
   helm dep build
   helm upgrade --install test-prism-lts . \
-       --set kafkaConnect.tag="$git_sha" \
-       --set s3ConnectorJob.tag="$git_sha" \
+       --set kafkaConnect.tag="my-new-change" \
+       --set s3ConnectorJob.tag=":my-new-change " \
        --set s3ConnectorJob.config.S3_BUCKET_NAME="$bucket_name" \
        --set tags.prism-lts-test-values=true \
        --wait --timeout 600 --debug
