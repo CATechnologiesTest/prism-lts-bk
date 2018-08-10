@@ -166,8 +166,8 @@ main () {
   helm dep update
   helm dep build
   helm upgrade --install test-prism-lts . \
-       --set kafkaConnect.tag="my-new-change" \
-       --set s3ConnectorJob.tag=":my-new-change " \
+       --set kafkaConnect.tag="$git_sha" \
+       --set s3ConnectorJob.tag="$git_sha" \
        --set s3ConnectorJob.config.S3_BUCKET_NAME="$bucket_name" \
        --set tags.prism-lts-test-values=true \
        --wait --timeout 600 --debug
