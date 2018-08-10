@@ -46,12 +46,13 @@ check_s3() {
 
 check_s3_user_event() {
   local topic="$1"
-  local user_oid="$2"
+  local product_instance_id="$2"
   local product_id="$3"
+  local user_oid="$4"
   local year="$4"
   local month="$5"
   local day="$6"
-  local partition="topics/$topic/product_id=$product_id/user_oid=$user_oid/year=$year/month=$month/day=$day"
+  local partition="topics/$topic/product_instance_id=$product_instance_id/product_id=$product_id/user_oid=$user_oid/year=$year/month=$month/day=$day"
   aws s3 ls "s3://$bucket_name/$partition/"
 }
 
@@ -182,7 +183,7 @@ main () {
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "health-metrics"
 
   # AC User Event
-  repeat_and_sleep 'check_s3_user_event ac-user-event someothergreatinfo wakawakawaka 2018 01 04' "2" "80"
+  repeat_and_sleep 'check_s3_user_event ac-user-event thebest wakawakawaka someothergreatinfo 2018 01 04' "2" "80"
 
   # Site Modules
   repeat_and_sleep 'check_s3_sites site-modules acme ALM asd 2018 01 04' "2" "80"
