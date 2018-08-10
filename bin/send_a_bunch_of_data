@@ -2,8 +2,7 @@
 
 repo_path="$(git rev-parse --show-toplevel)"
 
-#posts avro messages to bucket
-#default bucket is local-prism-lts, this can be changed in the values.yaml
+#posts avro messages to kafka
 post_some_data_to_kafka() {
     local topic_name="$1"
     local data="$(cat $repo_path/data/$topic_name-msg.json | tr -d '\n ')"
