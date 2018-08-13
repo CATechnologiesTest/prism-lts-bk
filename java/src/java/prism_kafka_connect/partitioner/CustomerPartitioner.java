@@ -48,10 +48,7 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
 
   /*
    * Overriding DefaultPartitioner's configure method
-   * initializes the global fields fieldNamesSites, fieldNamesSaas, fieldNamesUserEvents and fieldNamesDefault to the strings
-   * that map to each of the respective topics.
-   *
-   * dierectory delim is set to delimiter, "/"
+   * initializes the global field directory delim to delimiter, "/"
    *
    * @param: Map<String, Object> config
    */
@@ -132,7 +129,7 @@ public class CustomerPartitioner<T> extends DefaultPartitioner<T> {
 
     /*
      * Called by encodePartition when checking the valueSchema() of the sinkRecord.
-     * whichFieldNames check the availability of certain fields in the valueSchema, and return the corresponding list of fields.
+     * whichFieldNames checks the availability of certain fields in the valueSchema, and return the corresponding list of fields.
      *
      * @param: Struct value, Schema valueSchema
      * @return: List<String>
