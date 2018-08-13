@@ -15,7 +15,7 @@ post_some_data_to_kafka() {
             --data "$data"
 }
 
-#will post 11 messages
+#will post 10 messages
 main() {
     local topic_name="$1"
     local max_count="${2:-10}"
