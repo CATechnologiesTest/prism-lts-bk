@@ -1,0 +1,29 @@
+{
+  "value_schema":
+  "{\"type\":\"record\",
+  \"name\":\"HealthMetric\",
+  \"namespace\":\"com.sts\",
+  \"fields\":[
+{\"name\":\"product_id\",\"type\":\"string\"},
+{\"name\":\"product_instance_id\",\"type\":\"string\"},
+{\"name\":\"description\",\"type\":[\"null\",\"string\"]},
+{\"name\":\"metric_date\",\"type\":\"string\"},
+{\"name\":\"health\",\"type\":\"double\"},
+{\"name\":\"metrics\",\"type\":{\"type\":\"map\",\"values\":\"string\"}},
+{\"name\":\"api_user\",\"type\":[\"null\",\"string\"],\"default\":null},
+{\"name\":\"api_key_name\",\"type\":[\"null\",\"string\"],\"default\":null}]}",
+"records": [{
+  "value": {
+    "product_id": "MLA",
+    "product_instance_id": "sassy",
+    "description": null,
+    "metric_date": "2018-01-04",
+    "health": 69.420,
+    "metrics": {
+      "foo": "bar"
+    },
+    "api_user": null,
+    "api_key_name": null
+  }
+}
+]}
