@@ -57,6 +57,7 @@ If you change the java source code for partitioners, make sure to build a jar, n
 1. Make sure your docker context is pointing at minikube. `eval $(minikube docker-env)`
 1. Make sure you are logged into `quay.io` on minikube. If not already logged in, you can use  `docker login quay.io` to login.
 1. Build the docker image `docker build -t quay.io/stsatlas/prism-lts:my-new-change . ` (No need to push the image up to quay.io)
+1. Build the docker image `docker build -t quay.io/stsatlas/bash-curl:my-new-change -f DockerfileCurl . ` if required (No need to push the image up to quay.io)
 1. Upgrade the release - update the `release_name` and tag name
 `helm upgrade --install <release_name> ./prism-lts --set tags.prism-lts-local-values=true --set kafkaConnect.tag=my-new-change`
 1. Then use `./bin/send_a_bunch_of_data <topic_name>` to send messages to kafka and test the flow
