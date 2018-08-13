@@ -10,7 +10,7 @@
  * customer_id,product_id,instance_id,metric_date
  *
  * For the ac-user-event, the partitioning scheme is:
- * user_oid,product_id,metric_date
+ * product_instance_id,product_id,user_oid,metric_date
  *
  * For other defaults, scheme is:
  * metric_date
