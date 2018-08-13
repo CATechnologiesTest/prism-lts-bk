@@ -2,6 +2,7 @@
 
 repo_path="$(git rev-parse --show-toplevel)"
 
+#posts avro messages to kafka
 post_some_data_to_kafka() {
     local topic_name="$1"
     local data="$(cat $repo_path/data/$topic_name-msg.json | tr -d '\n ')"
@@ -14,6 +15,7 @@ post_some_data_to_kafka() {
             --data "$data"
 }
 
+#will post 10 messages
 main() {
     local topic_name="$1"
     local max_count="${2:-10}"
