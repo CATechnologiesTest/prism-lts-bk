@@ -182,6 +182,7 @@ main () {
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-usage-metrics"
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "health-metrics"
   /bin/bash "$repo_path/bin/send_a_bunch_of_data" "saas-usage-metrics"
+  /bin/bash "$repo_path/bin/send_a_bunch_of_data" "site-user-consent"
 
   # AC User Event
   repeat_and_sleep 'check_s3_user_event ac-user-event thebest wakawakawaka someothergreatinfo 2018 01 04' "2" "80"
@@ -195,9 +196,11 @@ main () {
   # Health Metrics
   repeat_and_sleep 'check_s3_health_metrics health-metrics 125524 ALM 2018 01 04' "2" "80"
 
-  # Saas Usage Metrics Value
+  # Saas Usage Metrics
   repeat_and_sleep 'check_s3_health_metrics saas-usage-metrics sassy MLA 2018 01 04' "2" "80"
 
+  # Site User Consent
+  repeat_and_sleep 'check_s3_sites site-user-consent acme ALM asd 2018 01 04' "2" "80"
 }
 
 main "$@"

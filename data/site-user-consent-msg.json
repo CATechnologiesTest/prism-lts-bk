@@ -1,0 +1,39 @@
+{
+  "value_schema":"{
+    \"type\":\"record\",
+    \"name\":\"SiteUserConsent\",
+    \"namespace\":\"com.sts\",
+    \"fields\":[{
+        \"name\":\"product_id\",
+        \"type\":\"string\"
+        },
+        {
+          \"name\":\"customer_id\",
+          \"type\":\"string\"
+        },
+        {
+          \"name\":\"instance_id\",
+          \"type\":\"string\"
+        },
+        {
+          \"name\":\"metric_date\",
+          \"type\":\"string\"
+        },
+        {
+          \"name\":\"consent\",
+          \"type\":\"boolean\"
+        }
+    ]
+  }",
+  "records": [
+    {
+      "value": {
+        "product_id": "ALM",
+        "customer_id": "acme",
+        "instance_id": "asd",
+        "metric_date": "2018-01-04",
+        "consent": false
+      }
+    }
+  ]
+}
